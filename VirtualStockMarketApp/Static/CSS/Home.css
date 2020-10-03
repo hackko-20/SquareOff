@@ -1,0 +1,138 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap');
+
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    font-family: 'Montserrat';
+}
+
+.main {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #4169E1;
+}
+
+.main .content {
+    position: relative;
+    max-width: 750px;
+    text-align: center;
+}
+
+.main .content h2 {
+    color: #ffffff;
+    font-size: 70px;
+}
+.main .content p {
+    color: #ffffff;
+    font-size: 20px;
+    font-family: 'Josefin Sans';
+}
+
+.main header {
+    top: 0;
+    left: 0;
+    width: 100%;
+    position: absolute;
+    padding: 40px 50px;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+}
+
+.main header .logo {
+    color: #ffffff;
+    font-size: 16px;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.main header toggle {
+    position: relative;
+    width: 36px;
+    height: 28px;
+}
+
+.about {
+    position: relative;
+    width: 100%;
+    display: flex;
+}
+
+.about .contentAbout {
+    background-color: #ffffff;
+    padding: 100px;
+    width: 50%;
+}
+
+.heading {
+    color: #4169E1;
+    font-size: 50px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+.text {
+    color: #4169E1;
+    font-size: 20px;
+    font-weight: 200;
+    text-align: justify;
+}
+
+.imgAbout {
+    /* background-image: url("{{ STATIC_URL }}Images/AboutUsImg.jpg"); */
+    width: 50%;
+    background-size: cover;
+    background-position: center;
+}
+
+.ruleset {
+    position: relative;
+    width: 100%;
+    display: flex;
+    background-color: #4169E1;
+}
+
+.ruleset .contentRuleset{
+    text-align: center;
+    padding: 100px;
+    width: 100%;
+}
+
+.contentRuleset > h2 {
+    color: #ffffff;
+    text-transform: capitalize;
+    font-family: 'Josefin Sans';
+    font-size: 50px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+.textRuleset {
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 200;
+    margin-bottom: 50px;
+}
+
+.rulesetButton {
+    background-color: #02091f;
+    border: none;
+    color: #ffffff;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    font-family: 'Josefin Sans';
+    border-radius: 2px;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+}
