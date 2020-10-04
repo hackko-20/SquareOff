@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="{% static 'CSS/Home.css' %}" >   
+        <title>Home</title>
+    </head>
+    <body>
+        <!--- Main Display --->
+        <div class="main">
+            <header>
+                <a href="#" class="logo">VirtualStox</a>
+                <div class="toggle"></div>
+            </header>
+            <div class="content">
+                <h2>Become a Professional Trader</h2>
+                <br><br>
+                <p>
+                    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Harum eaque consequuntur eum tempora culpa commodi iusto asperiores pariatur voluptas repudiandae necessitatibus.
+                </p>
+            </div>
+        </div>
+        <!--- About --->
+        <section class="about">
+            <div class="contentAbout">
+                <h2 class="heading">About Us</h2>
+                <p class="text"><br>Lorem ipsum dolor sit amet consectetur adipisicing elit. Exercitationem minima, sit voluptate sunt vel eveniet blanditiis?<br><br>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima, veniam maiores? Ex, dolorum. Sequi aperiam quas nobis veniam fugit velit doloremque consequatur facere temporibus beatae.</p>
+            </div>
+            <div class="imgAbout" style="background-image: url('https://images.pexels.com/photos/669610/pexels-photo-669610.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500');">
+            </div>
+        </section>
+        <!--- Ruleset --->
+        <section class="ruleset">
+            <div class="contentRuleset">
+                <h2>Ruleset</h2><br>
+                <p class="textRuleset">Beginner in stock trading? No worries. We provide simple rules which are easy to follow. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Veritatis magnam nobis est recusandae dolorum nulla vero quos natus nemo numquam</p><br>
+                <button class="rulesetButton">Go to Ruleset</button>
+            </div>
+        </section>
+        <!--- Register --->
+        {% if message %}
+            <div>{{ message }}</div>
+        {% endif %}
+        <form action="{% url 'home' %}" method="POST">
+            {% csrf_token %}
+            <input type="text" name="first_name" placeholder="First Name">
+            <input type="text" name="last_name" placeholder="Last Name">
+            <input type="text" name="username" placeholder="Username">
+            <input type="text" name="email" placeholder="Email ID">
+            <input type="password" name="password" placeholder="Password">
+            <input type="submit">
+        </form>
+        <!--- Footer --->
+    </body>
+</html>
