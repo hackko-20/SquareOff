@@ -64,8 +64,8 @@ def login_view(request):
         if user is None or user.password != password:
             return render(request, 'VirtualStockMaretApp/Login.html', {"message": "Invalid Credentials"})
         
-        # if login successful, go Home
-        return render(reverse(home))
+        # if login successful, go home
+        return HttpResponseRedirect(reverse(home))
     
     # if user visits page
     return render(request, 'VirtualStockMaretApp/Login.html')

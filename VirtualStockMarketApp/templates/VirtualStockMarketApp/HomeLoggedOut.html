@@ -41,14 +41,14 @@
         {% if message %}
             <div>{{ message }}</div>
         {% endif %}
-        <form action="{% url 'home' %}" method="POST">
+        <form id="register" action="{% url 'home' %}" method="POST">
             {% csrf_token %}
-            <input type="text" name="first_name" placeholder="First Name">
-            <input type="text" name="last_name" placeholder="Last Name">
-            <input type="text" name="username" placeholder="Username">
-            <input type="text" name="email" placeholder="Email ID">
-            <input type="password" name="password" placeholder="Password">
-            <input type="submit">
+            <input class="input" type="text" name="first_name" placeholder="First Name">
+            <input class="input" type="text" name="last_name" placeholder="Last Name">
+            <input class="input" type="text" name="username" placeholder="Username">
+            <input class="input" type="text" name="email" placeholder="Email ID">
+            <input class="input" type="password" name="password" placeholder="Password">
+            <input class="input" type="submit">
         </form>
         <!--- Footer --->
     </body>
