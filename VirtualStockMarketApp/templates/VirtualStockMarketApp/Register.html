@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
         <link rel="stylesheet" href="{% static 'CSS/Home.css' %}" >   
         <title>Home</title>
     </head>
@@ -41,7 +42,7 @@
         {% if message %}
             <div>{{ message }}</div>
         {% endif %}
-        <form id="register" action="{% url 'home' %}" method="POST">
+        <form id="register" action="home/" method="POST">
             {% csrf_token %}
             <input class="input" type="text" name="first_name" placeholder="First Name">
             <input class="input" type="text" name="last_name" placeholder="Last Name">
