@@ -1,7 +1,10 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
         <link rel="stylesheet" href="{% static 'CSS/Home.css' %}" >   
+        <title>Home</title>
     </head>
     <body>
         <!--- Main Display --->
@@ -36,7 +39,18 @@
             </div>
         </section>
         <!--- Register --->
-        
+        {% if message %}
+            <div>{{ message }}</div>
+        {% endif %}
+        <form id="register" action="home/" method="POST">
+            {% csrf_token %}
+            <input class="input" type="text" name="first_name" placeholder="First Name">
+            <input class="input" type="text" name="last_name" placeholder="Last Name">
+            <input class="input" type="text" name="username" placeholder="Username">
+            <input class="input" type="text" name="email" placeholder="Email ID">
+            <input class="input" type="password" name="password" placeholder="Password">
+            <input class="input" type="submit">
+        </form>
         <!--- Footer --->
     </body>
 </html>

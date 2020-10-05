@@ -135,3 +135,14 @@
     border-radius: 2px;
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
 }
+
+#register {
+    margin: 25px;
+    padding: 25px;
+    display: block;
+}
+
+.input {
+    display: block;
+    padding: 5px;
+}
