@@ -3,18 +3,17 @@ from hashlib import sha256
 from . import models
 from django.db import IntegrityError
 from django.urls import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, request
 
 # Create your views here.
 
-"""
-The register_view is called by default when the user visits the website or visits '/home'. The view 
-generates Register.html, which either directs the user to Login.html page or accepts data for a new user.
-Though called the register_view, it generates home page for all the logged out users!
-"""
 def register_view(request):
+    """
+    The register_view is called by default when the user visits the website or visits '/home'. The view 
+    generates Register.html, which either directs the user to Login.html page or accepts data for a new user.
+    Though called the register_view, it generates home page for all the logged out users!
+    """
 
-    # if user submits data (trying to register)
     if request.method == "POST":
 
         # create object
@@ -29,7 +28,7 @@ def register_view(request):
         # if registration successful, return to Login page
         try: 
             user.save()
-            return render(request, 'VirtualStockMarketApp/Login.html')
+            return HttpResponseRedirect(reverse(login_view))
 
         # else
         except IntegrityError:
@@ -51,28 +50,34 @@ def register_view(request):
     # user gets to the page
     return render(request, 'VirtualStockMarketApp/Register.html')
 
-"""
-The login_view accepts data by the user for authentication. If the user submits the 
-correct credentials, the Home.html page is rendered, displaying personal information.
-Otherwise, the Login.html is re-generated displaying an error message.
-"""
+
 def login_view(request):
-    
-    # if user submits data
+    """
+    The login_view accepts data by the user for authentication. If the user submits the 
+    correct credentials, the Home.html page is rendered, displaying personal information.
+    Otherwise, the Login.html is re-generated displaying an error message.
+    """
+
     if request.method == "POST":
         username = request.POST["username"]
         password = sha256(request.POST["password"].encode('utf-8')).hexdigest()
-        user = models.User.objects.get(username=username)
+        user = models.User.objects.filter(username=username).first()
 
         # if username or password is incorrect
         if user is None or user.password != password:
-            return render(request, 'VirtualStockMaretApp/Login.html', {"message": "Invalid Credentials"})
+            return render(request, 'VirtualStockMarketApp/Login.html', {"message": "Invalid Credentials"})
         
-        # if login successful, go home
-        return render(request, 'VirtualStockMarketApp/Home.html')
+        # else if login is successful
+        return HttpResponseRedirect(reverse(home))
     
     # if user visits page
-    return render(request, 'VirtualStockMaretApp/Login.html')
+    return render(request, 'VirtualStockMarketApp/Login.html')
+
+def home(request):
+    """
+    Renders the Home.html provided the user is authenticated.
+    """
+    return render(request, 'VirtualStockMarketApp/Home.html')
 
 def portfolio(request):
     return render(request, 'VirtualStockMarketApp/Portfolio.html', {})

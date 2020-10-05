@@ -10,10 +10,10 @@
     <div>{{ message }}</div>
     {% endif %}
 
-    <form action="login/" method="POST">
+    <form action="login" method="POST">
         {% csrf_token %}
         <input type="text" name="username" placeholder="Username">
-        <input type="password" placeholder="Password">
+        <input name="password" type="password" placeholder="Password">
         <input type="submit">
         <!--Implement user forgets username or password-->
     </form>

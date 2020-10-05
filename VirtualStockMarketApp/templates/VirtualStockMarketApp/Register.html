@@ -3,7 +3,8 @@
 <html lang="en">
     <head>
         <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-        <link rel="stylesheet" href="{% static 'CSS/Home.css' %}" >   
+        <link rel="stylesheet" href="{% static 'CSS/Home.css' %}">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">   
         <title>Home</title>
     </head>
     <body>
@@ -12,6 +13,9 @@
             <header>
                 <a href="#" class="logo">VirtualStox</a>
                 <div class="toggle"></div>
+                <button type="button" class="btn btn-light">
+                    <a href="login">Already have an account? Sign in!</a>
+                </button>
             </header>
             <div class="content">
                 <h2>Become a Professional Trader</h2>
@@ -42,7 +46,7 @@
         {% if message %}
             <div>{{ message }}</div>
         {% endif %}
-        <form id="register" action="home/" method="POST">
+        <form id="register" action="register" method="POST">
             {% csrf_token %}
             <input class="input" type="text" name="first_name" placeholder="First Name">
             <input class="input" type="text" name="last_name" placeholder="Last Name">
