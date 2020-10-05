@@ -87,7 +87,6 @@
 }
 
 .imgAbout {
-    /* background-image: url("{{ STATIC_URL }}Images/AboutUsImg.jpg"); */
     width: 50%;
     background-size: cover;
     background-position: center;
