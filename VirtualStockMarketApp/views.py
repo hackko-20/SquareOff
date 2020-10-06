@@ -104,8 +104,10 @@ def portfolio(request):
             else:
                 quantity -= stock.quantity
         if(quantity > 0):
-            present_price = requests.get('https://cloud.iexapis.com/stable/txn.stock_symbol/quote?token=api_key')
-            net_worth += (quantity*present_price)
+            url = "https://cloud.iexapis.com/" + "stable/stock/" + txn.stock_symbol + "quote?token=" + api_key + "&filter=iexRealtimePrice"
+            response = requests.get(url)
+            present_price = response.json
+            net_worth += (quantity * present_price.iexRealtimePrice)
 
     #  calculation of profit/loss
     total_profit = 0
