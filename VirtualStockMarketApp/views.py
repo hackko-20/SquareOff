@@ -3,7 +3,6 @@ from hashlib import sha256
 from . import models
 from django.db import IntegrityError
 from django.urls import reverse
-from django.http import HttpResponseRedirect
 import pandas as pd
 from iexfinance.stocks import get_historical_data
 import requests
@@ -11,8 +10,9 @@ from django.http import HttpResponseRedirect, request
 import os
 
 # api key 
+if not os.getenv('IEX_api_token'):
+    raise RuntimeError("API Key not set.")
 api_key = os.getenv('IEX_api_token')
-
 
 # Create your views here.
 
@@ -22,16 +22,26 @@ def register_view(request):
     generates Register.html, which either directs the user to Login.html page or accepts data for a new user.
     Though called the register_view, it generates home page for all the logged out users!
     """
-
     if request.method == "POST":
 
+        # input form data
+        first_name = request.POST["first_name"]
+        last_name = request.POST["last_name"]
+        username = request.POST["username"]
+        password = request.POST["password"]
+
+        # check empty fields
+        if first_name == '' or last_name == '' or username == '' or password == '':
+            return render(request, 'VirtualStockMarketApp/Register.html', {
+                "message": "All fields are required."
+            })
+            
         # create object
         user = models.User(
-            first_name = request.POST["first_name"], 
-            last_name = request.POST["last_name"], 
-            username = request.POST["username"],
-            email = request.POST["email"],
-            password = sha256(request.POST["password"].encode('utf-8')).hexdigest()
+            first_name = first_name, 
+            last_name = last_name, 
+            username = username,
+            password = sha256(password.encode('utf-8')).hexdigest()
         )
 
         # if registration successful, return to Login page
@@ -39,15 +49,8 @@ def register_view(request):
             user.save()
             return HttpResponseRedirect(reverse(login_view))
 
-        # else
+        # else if registration fails
         except IntegrityError:
-
-            # check email duplicacy
-            query_set = models.User.objects.filter(email = request.POST["email"])
-            if query_set:
-                return render(request, 'VirtualStockMarketApp/Register.html', {
-                    "message": "An account with the associated Email Address already exists."
-                })
 
             # check username duplicacy
             query_set = models.User.objects.filter(username = request.POST["username"])
@@ -56,7 +59,7 @@ def register_view(request):
                     "message": "An account with the same username already exists."
                 })
 
-    # user gets to the page
+    # if request method is GET
     return render(request, 'VirtualStockMarketApp/Register.html')
 
 
@@ -66,40 +69,48 @@ def login_view(request):
     correct credentials, the Home.html page is rendered, displaying personal information.
     Otherwise, the Login.html is re-generated displaying an error message.
     """
-
     if request.method == "POST":
+
+        # input form data
         username = request.POST["username"]
-        password = sha256(request.POST["password"].encode('utf-8')).hexdigest()
+        password = request.POST["password"]
+
+        # check empty fields
+        if username == '' or password == '':
+            return render(request, 'VirtualStockMarketApp/Login.html', {
+                "message": "All fields are required."
+            })
+        
+        # if username or password is incorrect
+        password = sha256(password.encode('utf-8')).hexdigest()
         user = models.User.objects.filter(username=username).first()
 
-        # if username or password is incorrect
         if user is None or user.password != password:
             return render(request, 'VirtualStockMarketApp/Login.html', {"message": "Invalid Credentials"})
         
         # else if login is successful
+        request.session['user_id'] = user.id
         return HttpResponseRedirect(reverse(home))
     
-    # if user visits page
+    # if request method is GET
     return render(request, 'VirtualStockMarketApp/Login.html')
 
-def home(request):
-    """
-    Renders the Home.html provided the user is authenticated.
-    """
-    return render(request, 'VirtualStockMarketApp/Home.html')
-
 def portfolio(request):
+
+    if not request.session.get('user_id'):
+        return HttpResponseRedirect(reverse(login_view))
+
     user_favourites = models.Favourites.objects.filter(id = request.user.id)
-    user_transactHistory = models.TransactionHistory.objects.filter(id = request.user.id)
-    user_stocksOwned = models.StocksOwned.objects.filter(id = request.user.id)
+    user_txn_history = models.TransactionHistory.objects.filter(id = request.user.id)
+    user_stocks_owned = models.StocksOwned.objects.filter(id = request.user.id)
 
     #  calculation of net worth of the user
     net_worth = 0
-    for txn in user_stocksOwned:
+    for txn in user_stocks_owned:
         quantity = 0
-        stockList = user_transactHistory.objects.filter(stock_symbol = txn.stock_symbol)
-        for stock in stockList:
-            if(stock.bought == True):
+        stock_list = user_txn_history.objects.filter(stock_symbol = txn.stock_symbol)
+        for stock in stock_list:
+            if stock.bought == True:
                 quantity += stock.quantity
             else:
                 quantity -= stock.quantity
@@ -111,19 +122,21 @@ def portfolio(request):
 
     #  calculation of profit/loss
     total_profit = 0
-    for txn in user_stocksOwned:
+    for txn in user_stocks_owned:
         profit = 0
-        stockList = user_transactHistory.objects.filter(stock_symbol = txn.stock_symbol)
-        for stock in stockList:
-            if(stock.bought == True):
-                profit -= (stock.quantity*stock.share_price)
+        stock_list = user_txn_history.objects.filter(stock_symbol = txn.stock_symbol)
+        for stock in stock_list:
+            if stock.bought == True:
+                profit -= (stock.quantity * stock.share_price)
             else:
-                profit += (stock.quantity*stock.share_price)
+                profit += (stock.quantity * stock.share_price)
         total_profit += profit  
     
-    return render(request, 'VirtualStockMarketApp/Portfolio.html', {"user_favourites": user_favourites, "user_transactHistory": user_transactHistory, "net_worth": net_worth, "profit": total_profit})
+    return render(request, 'VirtualStockMarketApp/Portfolio.html', {"user_favourites": user_favourites, "user_transactHistory": user_txn_history, "net_worth": net_worth, "profit": total_profit})
 
-def homeLoggedIn(request):
+def home(request):
+    if not request.session.get('user_id'):
+        return HttpResponseRedirect(reverse(login_view))
+
     user_favourites = models.Favourites.objects.filter(id = request.user.id)
-    return render(request,'VirtualStockMarketApp/homeLoggedIn.html',{"user_favourites": user_favourites})
-
+    return render(request,'VirtualStockMarketApp/Home.html', {"user_favourites": user_favourites})
