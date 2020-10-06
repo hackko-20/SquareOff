@@ -4,6 +4,13 @@ from . import models
 from django.db import IntegrityError
 from django.urls import reverse
 from django.http import HttpResponseRedirect
+import pandas as pd
+from iexfinance.stocks import get_historical_data
+import requests
+import os
+
+# api key 
+api_key = os.getenv('IEX_api_token')
 
 # Create your views here.
 
@@ -75,5 +82,39 @@ def login_view(request):
     return render(request, 'VirtualStockMaretApp/Login.html')
 
 def portfolio(request):
-    return render(request, 'VirtualStockMarketApp/Portfolio.html', {})
+    user_favourites = models.Favourites.objects.filter(id = request.user.id)
+    user_transactHistory = models.TransactionHistory.objects.filter(id = request.user.id)
+    user_stocksOwned = models.stocksOwned.objects.filter(id = request.id.user)
+
+    #  calculation of net worth of the user
+    net_worth = 0
+    for txn in user_stocksOwned:
+        quantity = 0
+        stockList = user_transactHistory.objects.filter(stock_symbol = txn.stock_symbol)
+        for stock in stockList:
+            if(stock.bought == True):
+                quantity += stock.quantity
+            else:
+                quantity -= stock.quantity
+        if(quantity > 0):
+            present_price = requests.get('https://cloud.iexapis.com/stable/txn.stock_symbol/quote?token=api_key')
+            net_worth += (quantity*present_price)
+
+    #  calculation of profit/loss
+    total_profit = 0
+    for txn in user_stocksOwned:
+        profit = 0
+        stockList = user_transactHistory.objects.filter(stock_symbol = txn.stock_symbol)
+        for stock in stockList:
+            if(stock.bought == True):
+                profit -= (stock.quantity*stock.share_price)
+            else:
+                profit += (stock.quantity*stock.share_price)
+        total_profit += profit  
+    
+    return render(request, 'VirtualStockMarketApp/Portfolio.html', {"user_favourites": user_favourites, "user_transactHistory": user_transactHistory, "net_worth": net_worth, "profit": profit})
+
+def homeLoggedIn(request):
+    user_favourites = models.Favourites.objects.filter(id = request.user.id)
+    return render(request,'VirtualStockMarketApp/homeLoggedIn.html',{"user_favourites": user_favourites})
 
