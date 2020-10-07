@@ -9,7 +9,7 @@
     {% if message %}
     <div>{{ message }}</div>
     {% endif %}
-
+    
     <form action="login" method="POST">
         {% csrf_token %}
         <input type="text" name="username" placeholder="Username">
