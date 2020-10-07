@@ -3,7 +3,7 @@
 <html lang="en">
     <head>
         <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-        <link rel="stylesheet" href="{% static 'CSS/Home.css' %}">
+        <link rel="stylesheet" href="{% static 'CSS/Register.css' %}">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">   
         <title>Home</title>
     </head>
@@ -13,8 +13,8 @@
             <header>
                 <a href="#" class="logo">VirtualStox</a>
                 <div class="toggle"></div>
-                <button type="button" class="btn btn-light">
-                    <a href="login">Already have an account? Sign in!</a>
+                <button class="btn btn-light" type="button" class="btn btn-light">
+                    <a href="login" id="sign-in">Already have an account? Sign in!</a>
                 </button>
             </header>
             <div class="content">
@@ -23,6 +23,9 @@
                 <p>
                     Lorem ipsum dolor, sit amet consectetur adipisicing elit. Harum eaque consequuntur eum tempora culpa commodi iusto asperiores pariatur voluptas repudiandae necessitatibus.
                 </p>
+                <a href="#register">
+                    <img src="{% static 'Images/ScrollDown.png' %}" alt="Arrow">
+                </a>
             </div>
         </div>
         <!--- About --->
@@ -43,17 +46,20 @@
             </div>
         </section>
         <!--- Register --->
+        <h2 class="heading" id="sign-up"> Sign Up Now! </h2>
         {% if message %}
-            <div>{{ message }}</div>
+            <div id="error">{{ message }}</div>
         {% endif %}
-        <form id="register" action="register" method="POST">
-            {% csrf_token %}
-            <input class="input" type="text" name="first_name" placeholder="First Name">
-            <input class="input" type="text" name="last_name" placeholder="Last Name">
-            <input class="input" type="text" name="username" placeholder="Username">
-            <input class="input" type="password" name="password" placeholder="Password">
-            <input class="input" type="submit">
-        </form>
+        <div id="register">
+            <form action="register" method="POST">
+                {% csrf_token %}
+                <input class="form-control" type="text" name="first_name" placeholder="First Name">
+                <input class="form-control" type="text" name="last_name" placeholder="Last Name">
+                <input class="form-control" type="text" name="username" placeholder="Username">
+                <input class="form-control" type="password" name="password" placeholder="Password">
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </form>
+        </div>
         <!--- Footer --->
     </body>
 </html>

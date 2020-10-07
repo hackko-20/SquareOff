@@ -16,6 +16,9 @@ api_key = os.getenv('IEX_api_token')
 
 # Create your views here.
 
+def home_logged_out(request):
+    return render(request, 'VirtualStockMarketApp/HomeLoggedOut.html')
+
 def register_view(request):
     """
     The register_view is called by default when the user visits the website or visits '/home'. The view 

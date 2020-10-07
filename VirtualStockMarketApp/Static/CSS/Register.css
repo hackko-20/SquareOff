@@ -140,9 +140,23 @@
     margin: 25px;
     padding: 25px;
     display: block;
+    text-align: center;
 }
 
-.input {
-    display: block;
-    padding: 5px;
+#sign-up {
+    text-align: center;
+    margin: 75px auto 15px auto;
+}
+
+#sign-in {
+    text-decoration: none;
+}
+
+form {
+    display: inline-block;
+    width: 25%;
+}
+
+form input {
+    margin: 10px;
 }
