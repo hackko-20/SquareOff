@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="scroll-behavior:smooth;">
     <head>
         <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
         <link rel="stylesheet" href="{% static 'CSS/Register.css' %}">
@@ -14,7 +14,7 @@
                 <a href="#" class="logo">VirtualStox</a>
                 <div class="toggle"></div>
                 <button class="btn btn-light" type="button" class="btn btn-light">
-                    <a href="login" id="sign-in">Already have an account? Sign in!</a>
+                    <a href="login" style="text-decoration: none;">Already have an account? Sign in!</a>
                 </button>
             </header>
             <div class="content">
@@ -23,8 +23,8 @@
                 <p>
                     Lorem ipsum dolor, sit amet consectetur adipisicing elit. Harum eaque consequuntur eum tempora culpa commodi iusto asperiores pariatur voluptas repudiandae necessitatibus.
                 </p>
-                <a href="#register">
-                    <img src="{% static 'Images/ScrollDown.png' %}" alt="Arrow">
+                <a href="#left">
+                    <button class="btn btn-light">Sign up now!</button>
                 </a>
             </div>
         </div>
@@ -46,19 +46,27 @@
             </div>
         </section>
         <!--- Register --->
-        <h2 class="heading" id="sign-up"> Sign Up Now! </h2>
-        {% if message %}
-            <div id="error">{{ message }}</div>
-        {% endif %}
-        <div id="register">
-            <form action="register" method="POST">
-                {% csrf_token %}
-                <input class="form-control" type="text" name="first_name" placeholder="First Name">
-                <input class="form-control" type="text" name="last_name" placeholder="Last Name">
-                <input class="form-control" type="text" name="username" placeholder="Username">
-                <input class="form-control" type="password" name="password" placeholder="Password">
-                <button class="btn btn-primary" type="submit">Submit</button>
-            </form>
+        <div class="container" style="padding-top: 100px; padding-bottom: 100px;">
+            <div id="left">
+                {% if message %}
+                    <div id="error">{{ message }}</div>
+                {% endif %}
+                <h2 class="heading"> Sign Up Now! </h2>
+                <form action="register" method="POST" style="display: inline-block; width: 50%;">
+                    {% csrf_token %}
+                    <input style="margin: 10px;" class="form-control" type="text" name="first_name" placeholder="First Name">
+                    <input style="margin: 10px;" class="form-control" type="text" name="last_name" placeholder="Last Name">
+                    <input style="margin: 10px;" class="form-control" type="text" name="username" placeholder="Username">
+                    <input style="margin: 10px;" class="form-control" type="password" name="password" placeholder="Password">
+                    <button class="btn btn-primary" type="submit">Submit</button>
+                </form>
+            </div>
+            <div id="right">
+                <h3 class="heading">Already A User? Sign In!</h3>
+                <button class='btn btn-primary'>
+                    <a href="login" style="text-decoration: none; color: white;">Login!</a>
+                </button>
+            </div>
         </div>
         <!--- Footer --->
     </body>
