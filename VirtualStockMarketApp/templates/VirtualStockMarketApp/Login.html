@@ -10,18 +10,24 @@
     <title>Login</title>
 </head>
 <body>
-    <div>
-        <h2>Sign in to Square Off</h2>
-        {% if message %}
-        <div>{{ message }}</div>
-        {% endif %}   
-        <form action="login" method="POST">
-            {% csrf_token %}
-            <input type="text" name="username" placeholder="Username">
-            <input name="password" type="password" placeholder="Password">
-            <input type="submit">
-            <!--Implement user forgets username or password-->
-        </form>
+    <div class="outer">
+        <div class="middle">
+            <div class="inner">
+                <h1>SQUARE OFF</h1>
+                <h2 id="heading">Sign in!</h2>
+                <form action="login" method="POST">
+                    {% if message %}
+                    <div id="error">{{ message }}</div>
+                    {% endif %}   
+                    {% csrf_token %}
+                    <input type="text" name="username" placeholder="Username">
+                    <input name="password" type="password" placeholder="Password">
+                    <button type="submit" class="btn btn-dark">Login</button>
+                    <!--Implement user forgets username or password-->
+                </form>
+                <p>New to Square Off? <a href="register">Create an account.</a></p>
+            </div>
+        </div>
     </div>
 </body>
 </html>

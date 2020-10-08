@@ -11,7 +11,7 @@
         <!--- Main Display --->
         <div class="main">
             <header>
-                <a href="#" class="logo">VirtualStox</a>
+                <a href="#" class="logo">SQUARE OFF</a>
                 <div class="toggle"></div>
                 <button class="btn btn-light" type="button" class="btn btn-light">
                     <a href="login" style="text-decoration: none;">Already have an account? Sign in!</a>
@@ -23,7 +23,7 @@
                 <p>
                     Lorem ipsum dolor, sit amet consectetur adipisicing elit. Harum eaque consequuntur eum tempora culpa commodi iusto asperiores pariatur voluptas repudiandae necessitatibus.
                 </p>
-                <a href="#left">
+                <a href="#container">
                     <button class="btn btn-light">Sign up now!</button>
                 </a>
             </div>
@@ -46,27 +46,23 @@
             </div>
         </section>
         <!--- Register --->
-        <div class="container" style="padding-top: 100px; padding-bottom: 100px;">
-            <div id="left">
-                {% if message %}
-                    <div id="error">{{ message }}</div>
-                {% endif %}
-                <h2 class="heading"> Sign Up Now! </h2>
-                <form action="register" method="POST" style="display: inline-block; width: 50%;">
-                    {% csrf_token %}
-                    <input style="margin: 10px;" class="form-control" type="text" name="first_name" placeholder="First Name">
-                    <input style="margin: 10px;" class="form-control" type="text" name="last_name" placeholder="Last Name">
-                    <input style="margin: 10px;" class="form-control" type="text" name="username" placeholder="Username">
-                    <input style="margin: 10px;" class="form-control" type="password" name="password" placeholder="Password">
-                    <button class="btn btn-primary" type="submit">Submit</button>
-                </form>
-            </div>
-            <div id="right">
-                <h3 class="heading">Already A User? Sign In!</h3>
-                <button class='btn btn-primary'>
-                    <a href="login" style="text-decoration: none; color: white;">Login!</a>
-                </button>
-            </div>
+        <div class="container" id="container">
+            {% if message %}
+                <div id="error">{{ message }}</div>
+            {% endif %}
+            <h3 class="heading" style="margin-bottom: 30px; font-size: 40px;"> Sign Up Now! </h3>
+            <form action="register" method="POST">
+                {% csrf_token %}
+                <input style="margin: 10px;" class="form-control" type="text" name="first_name" placeholder="First Name">
+                <input style="margin: 10px;" class="form-control" type="text" name="last_name" placeholder="Last Name">
+                <input style="margin: 10px;" class="form-control" type="text" name="username" placeholder="Username">
+                <input style="margin: 10px;" class="form-control" type="password" name="password" placeholder="Password">
+                <button class="btn btn-primary" style="width: 100%; margin: 10px" type="submit">Submit</button>
+            </form>
+            <h4 style="margin: 30px">
+                Already A User? 
+                <a href="login">Sign In!</a> 
+            </h4>
         </div>
         <!--- Footer --->
     </body>
