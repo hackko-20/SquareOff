@@ -19,7 +19,7 @@ api_key = os.getenv('IEX_TOKEN')
 
 def register_view(request):
     """
-    The register_view is called by default when the user visits the website or visits '/home'. The view 
+    The register_view is called by default when the user visits the website or visits '/register'. The view 
     generates Register.html, which either directs the user to Login.html page or accepts data for a new user.
     Though called the register_view, it generates home page for all the logged out users!
     """
@@ -95,6 +95,14 @@ def login_view(request):
     
     # if request method is GET
     return render(request, 'VirtualStockMarketApp/Login.html')
+
+def logout_view(request):
+    """
+    Logs user out, if signed in, by deleting the user_id from session.
+    """
+    if request.session.get('user_id'):
+        del request.session['user_id']
+    return HttpResponseRedirect(reverse(register_view))
 
 def portfolio(request):
 
