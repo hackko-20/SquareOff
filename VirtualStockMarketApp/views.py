@@ -17,9 +17,6 @@ api_key = os.getenv('IEX_TOKEN')
 
 # Create your views here.
 
-def home_logged_out(request):
-    return render(request, 'VirtualStockMarketApp/HomeLoggedOut.html')
-
 def register_view(request):
     """
     The register_view is called by default when the user visits the website or visits '/home'. The view 
@@ -109,7 +106,7 @@ def portfolio(request):
     user_txn_history = models.TransactionHistory.objects.filter(id = request.session.get('user_id'))
     user_stocks_owned = models.StocksOwned.objects.filter(id = request.session.get('user_id'))
 
-    #  calculation of net worth of the user
+    # calculation of net worth of the user
     # url = "https://cloud.iexapis.com/" + "stable/stock/" + "MSFT" + "/quote?token=" + api_key + "&filter=iexRealtimePrice"
     # response = requests.get(url)
     # NW= response.json() 
@@ -123,7 +120,7 @@ def portfolio(request):
                 quantity += stock.quantity
             else:
                 quantity -= stock.quantity
-        if(quantity > 0):
+        if quantity > 0:
             url = "https://cloud.iexapis.com/" + "stable/stock/" + txn.stock_symbol + "/quote?token=" + api_key + "&filter=iexRealtimePrice"
             response = requests.get(url)
             present_price = response.json()
@@ -141,7 +138,13 @@ def portfolio(request):
                 profit += (stock.quantity * stock.share_price)
         total_profit += profit  
     
-    return render(request, 'VirtualStockMarketApp/Portfolio.html', {"user_favourites": user_favourites, "user_transactHistory": user_txn_history, "net_worth": net_worth, "profit": total_profit, "user": user})
+    return render(request, 'VirtualStockMarketApp/Portfolio.html', {
+        "user_favourites": user_favourites, 
+        "user_transactHistory": user_txn_history, 
+        "net_worth": net_worth, 
+        "profit": total_profit, 
+        "user": user
+    })
 
 def home(request):
     if not request.session.get('user_id'):
