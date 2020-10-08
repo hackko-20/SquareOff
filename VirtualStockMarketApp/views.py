@@ -159,4 +159,4 @@ def home(request):
         return HttpResponseRedirect(reverse(login_view))
 
     user_favourites = models.Favourites.objects.filter(id = request.user.id)
-    return render(request,'VirtualStockMarketApp/Home.html', {"user_favourites": user_favourites})
+    return render(request,'VirtualStockMarketApp/Home.html', {"user_favourites": user_favourites}) 
