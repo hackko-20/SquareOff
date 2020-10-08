@@ -8,11 +8,12 @@ from iexfinance.stocks import get_historical_data
 import requests
 from django.http import HttpResponseRedirect, request
 import os
+import json
 
 # api key 
-if not os.getenv('IEX_api_token'):
+if not os.getenv('IEX_TOKEN'):
     raise RuntimeError("API Key not set.")
-api_key = os.getenv('IEX_api_token')
+api_key = os.getenv('IEX_TOKEN')
 
 # Create your views here.
 
@@ -103,11 +104,16 @@ def portfolio(request):
     if not request.session.get('user_id'):
         return HttpResponseRedirect(reverse(login_view))
 
-    user_favourites = models.Favourites.objects.filter(id = request.user.id)
-    user_txn_history = models.TransactionHistory.objects.filter(id = request.user.id)
-    user_stocks_owned = models.StocksOwned.objects.filter(id = request.user.id)
+    user = models.User.objects.get(id = request.session.get('user_id'))
+    user_favourites = models.Favourites.objects.filter(id = request.session.get('user_id'))
+    user_txn_history = models.TransactionHistory.objects.filter(id = request.session.get('user_id'))
+    user_stocks_owned = models.StocksOwned.objects.filter(id = request.session.get('user_id'))
 
     #  calculation of net worth of the user
+    # url = "https://cloud.iexapis.com/" + "stable/stock/" + "MSFT" + "/quote?token=" + api_key + "&filter=iexRealtimePrice"
+    # response = requests.get(url)
+    # NW= response.json() 
+    # net_worth = NW["iexRealtimePrice"]
     net_worth = 0
     for txn in user_stocks_owned:
         quantity = 0
@@ -117,9 +123,11 @@ def portfolio(request):
                 quantity += stock.quantity
             else:
                 quantity -= stock.quantity
-        if quantity > 0:
-            present_price = requests.get('https://cloud.iexapis.com/stable/txn.stock_symbol/quote?token=api_key')
-            net_worth += (quantity*present_price)
+        if(quantity > 0):
+            url = "https://cloud.iexapis.com/" + "stable/stock/" + txn.stock_symbol + "/quote?token=" + api_key + "&filter=iexRealtimePrice"
+            response = requests.get(url)
+            present_price = response.json()
+            net_worth += (quantity * present_price["iexRealtimePrice"])
 
     #  calculation of profit/loss
     total_profit = 0
@@ -133,7 +141,7 @@ def portfolio(request):
                 profit += (stock.quantity * stock.share_price)
         total_profit += profit  
     
-    return render(request, 'VirtualStockMarketApp/Portfolio.html', {"user_favourites": user_favourites, "user_transactHistory": user_txn_history, "net_worth": net_worth, "profit": total_profit})
+    return render(request, 'VirtualStockMarketApp/Portfolio.html', {"user_favourites": user_favourites, "user_transactHistory": user_txn_history, "net_worth": net_worth, "profit": total_profit, "user": user})
 
 def home(request):
     if not request.session.get('user_id'):

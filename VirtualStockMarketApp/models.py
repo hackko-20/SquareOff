@@ -1,4 +1,7 @@
 from django.db import models
+from django.contrib import admin
+
+
 
 # Create your models here.
 
@@ -23,3 +26,8 @@ class TransactionHistory(models.Model):
 class StocksOwned(models.Model):
     userID = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     stock_symbol = models.CharField(max_length=64)
+
+# Registered models
+admin.site.register(Favourites)
+admin.site.register(TransactionHistory)
+admin.site.register(StocksOwned)
