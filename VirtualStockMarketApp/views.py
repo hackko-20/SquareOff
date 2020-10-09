@@ -9,6 +9,7 @@ import requests
 from django.http import HttpResponseRedirect, request, HttpResponse
 import os
 import json
+from datetime import date
 
 # api key 
 if not os.getenv('IEX_TOKEN'):
@@ -148,17 +149,50 @@ def portfolio(request):
     })
 
 def explore(request):
-
-    return render()
+    pass
 
 
 def place_order(request):
 
+    if not request.session.get("user_id"):
+        return HttpResponseRedirect(reverse(login_view))
+
     if request.method == "GET":
         return render(request, 'VirtualStockMarketApp/BuySell.html')    
     
-    
+    trait = request.POST["TRAIT"]
+    stock_symbol = request.POST["stock_symbol"]
+    if request.POST["LimitCheck"] is not 'limit':
+        limit_price = None
+    else:
+        limit_price = request.POST["price"]
+    quantity = request.POST["quantity"]
+    GTC = None
+    if limit_price not None:
+        GTC = None
+    elif request.POST["OrderType"] == "GTC":
+        GTC = True
+    else: 
+        GTC = False
+    share_price = request.POST["price"]
+    if limit_price is None:
+        status_pending = False
+    else:
+        status_pending = True
+    timestamp = date.today()
 
+    # creating object
+    new_order = models.OrderHistory (
+        userID = request.session["user_id"], 
+        stock_symbol = stock_symbol,
+        trait = trait,
+        quantity = quantity,
+        timestamp = timestamp,
+        GTC = GTC,
+        status_pending = status_pending,
+        limit_price = limit_price,
+        share_price = share_price
+    )
 
 def home(request):
     if not request.session.get('user_id'):

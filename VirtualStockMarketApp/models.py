@@ -46,3 +46,6 @@ class OrderHistory(models.Model):
     limit_price = models.DecimalField(null=True, decimal_places=2, max_digits=20, default=0)
     share_price = models.DecimalField(decimal_places=2, max_digits=20, default=0)
     GTC = models.BooleanField(null=True)
+
+# dont need txn history
+# limit price could be a bool
