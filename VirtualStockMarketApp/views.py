@@ -6,7 +6,7 @@ from django.urls import reverse
 import pandas as pd
 from iexfinance.stocks import get_historical_data
 import requests
-from django.http import HttpResponseRedirect, request
+from django.http import HttpResponseRedirect, request, HttpResponse
 import os
 import json
 
@@ -166,3 +166,9 @@ def home(request):
 
     user_favourites = models.Favourites.objects.filter(id = request.user.id)
     return render(request,'VirtualStockMarketApp/Home.html', {"user_favourites": user_favourites}) 
+
+def buySell(request):
+    return render(request,"VirtualStockMarketApp/BuySell.html",{})
+
+def searchBar(request):
+    return render(request,"VirtualStockMarketApp/BuySell.html",{})
