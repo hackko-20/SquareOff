@@ -120,25 +120,18 @@ def portfolio(request):
     # NW= response.json() 
     # net_worth = NW["iexRealtimePrice"]
     net_worth = 0
-    for txn in user_stocks_owned:
-        quantity = 0
-        stock_list = user_txn_history.objects.filter(stock_symbol = txn.stock_symbol)
-        for stock in stock_list:
-            if stock.bought == True:
-                quantity += stock.quantity
-            else:
-                quantity -= stock.quantity
-        if quantity > 0:
-            url = "https://cloud.iexapis.com/" + "stable/stock/" + txn.stock_symbol + "/quote?token=" + api_key + "&filter=iexRealtimePrice"
-            response = requests.get(url)
-            present_price = response.json()
-            net_worth += (quantity * present_price["iexRealtimePrice"])
+    for row in user_stocks_owned:
+        quantity = user_stocks_owned.get(stock_symbol = row.stock_symbol)
+        url = "https://cloud.iexapis.com/" + "stable/stock/" + row.stock_symbol + "/quote?token=" + api_key + "&filter=iexRealtimePrice"
+        response = requests.get(url)
+        present_price = response.json()
+        net_worth += (quantity * present_price["iexRealtimePrice"])
 
     #  calculation of profit/loss
     total_profit = 0
-    for txn in user_stocks_owned:
+    for row in user_stocks_owned:
         profit = 0
-        stock_list = user_txn_history.objects.filter(stock_symbol = txn.stock_symbol)
+        stock_list = user_txn_history.filter(stock_symbol = row.stock_symbol)
         for stock in stock_list:
             if stock.bought == True:
                 profit -= (stock.quantity * stock.share_price)
@@ -153,6 +146,19 @@ def portfolio(request):
         "profit": total_profit, 
         "user": user
     })
+
+def explore(request):
+
+    return render()
+
+
+def place_order(request):
+
+    if request.method == "GET":
+        return render(request, 'VirtualStockMarketApp/BuySell.html')    
+    
+    
+
 
 def home(request):
     if not request.session.get('user_id'):
