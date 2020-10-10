@@ -1,33 +1,26 @@
 //https://cloud.iexapis.com/stable/stock/MSFT/quote?token=pk_245073c85596466aa6afff012f007125
-let api_key = "pk_245073c85596466aa6afff012f007125"
+let api_key = "pk_245073c85596466aa6afff012f007125";
 let stock_symbol;
 function search_api() {
     let key = document.getElementById('searchbar').value
     key = key.toUpperCase();
     let url = "https://cloud.iexapis.com/" + "stable/stock/" + key + "/quote?token=" + api_key;
     console.log(url);
+    
     fetch(url)
-        .then(response => {
-            
-            if(response.status === 200)
-            {
-                stock = response.json();
-                var element = document.createElement("div");
-                element.setAttribute("id","link");
-                element.setAttribute("class","stockDetails");
-                link.innerHTML=stock["symbol"];
+        .then(response => response.json())
+        .then(data => {
+                var element = document.createElement("button");
+                element.setAttribute("type","submit");
+                element.setAttribute("class","StockLink");
+                document.getElementById("ss").value = data.symbol;
+                console.log(document.getElementById("ss").value);
+                element.innerHTML="See details about the stock" + data.companyName;
                 document.getElementById("searchOption").appendChild(element);
-                document.getElementById("stock_symbol").setAttribute("value",stock["symbol"]);
-            }  
-            else
-            {
-                alert("Enter valid stock symbol");
-            }
-        })
-        .catch(error => {
-            if(error == 404)
-                alert('Stock symbol does not match');
-        });
+                })
+        .catch(error =>{
+            alert("symbol not found");
+        });  
 }
 
 function openForm(evt, formName ) {
@@ -43,7 +36,6 @@ function openForm(evt, formName ) {
     document.getElementById(formName).style.display = "block";
     evt.currentTarget.className += " active";
 }
-
 
 function switchCL() {
     var field = document.getElementById("LimitCheck")[0].value;

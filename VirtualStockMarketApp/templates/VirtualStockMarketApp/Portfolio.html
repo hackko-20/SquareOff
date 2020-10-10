@@ -10,8 +10,6 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
         <title>Portfolio</title>
         <script>
-            var fav = "{{ user_favourites }}";
-            console.log(fav);
         </script>
     </head>
     <body>
@@ -35,6 +33,7 @@
                         <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#FV" aria-expanded="false" aria-controls="FV">Favourites</button>
                     </li>   
                 </ul>
+                <div class="ExploreButton"><a href="explore">Go To Explore Menu!</a></div>
             </div>
             <div class = "mainContent">
                 <!--Profile section -->
@@ -87,7 +86,8 @@
                 <!-- Profit section -->
                 <div class="profit collapse" aria-labelledby="headingThree" data-parent="#accordionDisplay" id="PL">
                     <h3>Profit/Loss Statement</h3><br><br>
-                    <h4>Overall Gain:   Today's Gain: </h4>
+                    <h4 style="float:left;">Overall Gain: </h4>
+                    <h4 style="float:right;">Today's Gain: </h4>
                 </div>
 
                 <!-- Favourites -->
@@ -102,11 +102,26 @@
                           </tr>
                         </thead>
                         <tbody>
-                            {% for txn in user_transactHistory %}
+                            {% for favStocks in user_favourites %}
+                            <script type="text/javascript">
+                                let api_key = "pk_245073c85596466aa6afff012f007125";
+                                var symbol = "{{ favStocks.stock_symbol }}";
+                                let url = "https://cloud.iexapis.com/" + "stable/stock/" + symbol + "/quote?token=" + api_key;
+                                fetch(url)
+                                    .then(response => response.json())
+                                    .then(data => {
+                                            console.log("in data");
+                                            var x=data.latestPrice;
+                                            document.getElementById("stock_symbolCol").innerHTML = " " + x + " ";
+                                    })
+                                    .catch(error => {
+                                        alert("stock symbol not found");
+                                    });
+                            </script>
                           <tr>
                             <th scope="row">1</th>
-                            <td class>{{ txn.stock_symbol }}</td>
-                            <td>{{ txn.iexRealtimePrice }}</td>
+                            <td>{{ favStocks.stock_symbol }}</td>
+                            <td id="stock_symbolCol"></td>
                           </tr>
                           {% endfor %}
                         </tbody>
