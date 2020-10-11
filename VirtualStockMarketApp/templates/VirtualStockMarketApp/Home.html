@@ -7,6 +7,12 @@
 </head>
 <body>
     <div>This page displays user's favourites and trending stocks.</div>
-    <div>{{ user_favourites }}</div>
+    <div>
+        <ul>
+        {% for favStocks in user_favourites %}
+        <li>{{ favStocks.stock_symbol }}</li>
+        {% endfor %}
+        </ul>
+    </div>
 </body>
 </html>

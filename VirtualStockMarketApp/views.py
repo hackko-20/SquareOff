@@ -9,7 +9,6 @@ import requests
 from django.http import HttpResponseRedirect, request, HttpResponse
 import os
 import json
-from datetime import date
 
 # api key 
 if not os.getenv('IEX_TOKEN'):
@@ -106,7 +105,15 @@ def logout_view(request):
     return HttpResponseRedirect(reverse(register_view))
 
 def portfolio(request):
-
+    """
+    This view renders the portfolio, the page where all the information about the user is shown.
+    API Reference:
+        # url = "https://cloud.iexapis.com/" + "stable/stock/" + "MSFT" + "/quote?token=" + api_key + "&filter=iexRealtimePrice"
+        # response = requests.get(url)
+        # NW= response.json() 
+        # net_worth = NW["iexRealtimePrice"]
+    """
+    # if the user has not logged in
     if not request.session.get('user_id'):
         return HttpResponseRedirect(reverse(login_view))
 
@@ -116,10 +123,6 @@ def portfolio(request):
     user_stocks_owned = models.StocksOwned.objects.filter(id = request.session.get('user_id'))
 
     # calculation of net worth of the user
-    # url = "https://cloud.iexapis.com/" + "stable/stock/" + "MSFT" + "/quote?token=" + api_key + "&filter=iexRealtimePrice"
-    # response = requests.get(url)
-    # NW= response.json() 
-    # net_worth = NW["iexRealtimePrice"]
     net_worth = 0
     for row in user_stocks_owned:
         quantity = user_stocks_owned.get(stock_symbol = row.stock_symbol)
@@ -149,31 +152,40 @@ def portfolio(request):
     })
 
 def place_order(request):
-
+    """
+    The page displays in-depth data about a particular stock. 
+    The page also accepts data to process an order, if placed by a user.
+    """
+    # if the user has not logged in
     if not request.session.get("user_id"):
         return HttpResponseRedirect(reverse(login_view))
+
+    if request.method == "GET":
+        stock_symbol = "NOT FOUND"
+        if request.GET.get("ss") is not None:
+            stock_symbol = request.GET["ss"]
+        return render(request, 'VirtualStockMarketApp/BuySell.html', {"stock_symbol": stock_symbol})   
     
-    if request.method == "POST": 
-        trait = request.POST["TRAIT"]
-        stock_symbol = request.POST["stock_symbol"]
-        if request.POST["LimitCheck"] is not 'limit':
-            limit_price = None
-        else:
-            limit_price = request.POST["price"]
-        quantity = request.POST["quantity"]
+    # if the user submits data to place an order
+    trait = request.POST["TRAIT"]
+    stock_symbol = request.POST["stock_symbol"]
+    if request.POST["LimitCheck"] != 'limit':
+        limit_price = None
+    else:
+        limit_price = request.POST["price"]
+    quantity = request.POST["quantity"]
+    GTC = None
+    if limit_price is not None:
         GTC = None
-        if limit_price not None:
-            GTC = None
-        elif request.POST["OrderType"] == "GTC":
-            GTC = True
-        else: 
-            GTC = False
-        share_price = request.POST["price"]
-        if limit_price is None:
-            status_pending = False
-        else:
-            status_pending = True
-        timestamp = date.today()
+    elif request.POST["OrderType"] == "GTC":
+        GTC = True
+    else: 
+        GTC = False
+    share_price = request.POST["price"]
+    if limit_price is None:
+        status_pending = False
+    else:
+        status_pending = True
 
     # creating object
     new_order = models.OrderHistory (
@@ -181,7 +193,6 @@ def place_order(request):
         stock_symbol = stock_symbol,
         trait = trait,
         quantity = quantity,
-        timestamp = timestamp,
         GTC = GTC,
         status_pending = status_pending,
         limit_price = limit_price,
@@ -197,11 +208,11 @@ def home(request):
     if not request.session.get('user_id'):
         return HttpResponseRedirect(reverse(login_view))
 
-    user_favourites = models.Favourites.objects.filter(id = request.user.id)
+    user_favourites = models.Favourites.objects.filter(id = request.session.get('user_id'))
     return render(request,'VirtualStockMarketApp/Home.html', {"user_favourites": user_favourites}) 
 
 def buySell(request):
     return render(request,"VirtualStockMarketApp/BuySell.html",{})
 
-def searchBar(request):
-    return render(request,"VirtualStockMarketApp/BuySell.html",{})
+def explore(request):
+    return render(request,"VirtualStockMarketApp/Explore.html",{})

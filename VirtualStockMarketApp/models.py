@@ -1,11 +1,12 @@
 from django.db import models
 from django.contrib import admin
-
+#from django.utils import timezone
 
 
 # Create your models here.
 
 # User model stores records for every registered user.
+
 class User(models.Model):
     first_name = models.CharField(max_length=64)
     last_name = models.CharField(max_length=64)
@@ -41,10 +42,9 @@ class OrderHistory(models.Model):
     stock_symbol = models.CharField(max_length=64)
     trait = models.CharField(max_length=32, choices = TRAITS)
     quantity = models.IntegerField(default=0)
-    timestamp = models.DateTimeField(null=False)
+    #timestamp = models.DateTimeField(default=timezone.now(),null=False)
     status_pending = models.BooleanField(null=False, default=True)
     limit_price = models.DecimalField(null=True, decimal_places=2, max_digits=20, default=0)
     share_price = models.DecimalField(decimal_places=2, max_digits=20, default=0)
     GTC = models.BooleanField(null=True)
-
 

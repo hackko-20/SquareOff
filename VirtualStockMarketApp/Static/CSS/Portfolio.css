@@ -34,6 +34,12 @@ body {
     font-weight: 600;
 }
 
+.ExploreButton {
+    color: #4169E1;
+    background-color: #ffffff;
+    margin-right: 0px;
+}
+
 .mainContent {
     background-color: #4169E1;
     position:absolute;

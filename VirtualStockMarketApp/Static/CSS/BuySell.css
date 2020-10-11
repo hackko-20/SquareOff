@@ -9,6 +9,15 @@
     
 }
 
+.StockLink {
+    padding: 15px;
+    background-color: #ffffff;
+    color: #4169E1;
+    font-family: "Montserrat";
+    font-weight: 800;
+    border-radius: 2px;
+}
+
 .mainContent {
     background-color: #4169E1; 
     height: 100vh;
@@ -100,9 +109,14 @@ input[type=number] {
 .LimitCheck {
     padding: 5px;
     border-radius: 2px;
-
 }
+
 .limit_current {
     display: inline;
 }
 
+.stockDetails {
+    margin: 10px;
+    color: #ffffff;
+    font-family: "Montserrat";
+}

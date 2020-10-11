@@ -16,15 +16,13 @@
         <div style="background-color: #4169E1;"><br><br></div>
         
         <div class="mainContent">
-            <!-- search bar  -->
-            <div class="searchBar">
-                <input id="searchbar" type="text" name="search" placeholder="Enter stock symbol..."><button class="searchButton" onclick="search_api()">Search</button>
-                <div id="searchOption" style="background-color: #4169E1;"></div>
-            </div>
-            
             <!-- Stock Details -->
             <div class="stockDetails">
-
+                {% if stock_symbol != "NOT FOUND" %}
+                <p>{{ stock_symbol }}</p>
+                {% else %}
+                <p>Search for symbol</p>
+                {% endif %}
             </div>
             <!-- buySell form -->
             <div class="tab">
@@ -38,9 +36,9 @@
                     <input type="text" style="display:none;" value="IB" name="TRAIT">
                     <input type="text" style="display:None;" name="stock_symbol">
                     Select Price Order Type: <select name="LimitCheck" class="LimitCheck">
-                        <option value="current">Current Price</option>
-                        <option value="limit">Limit price</option>
-                    </select><br><br>
+                                                <option value="current">Current Price</option>
+                                                <option value="limit">Limit price</option>
+                                            </select><br><br>
                     Price: <input type="number" name="price" placeholder="" step="0.01"><br><br>
                     Quantity: <input type="number" name="quantity" placeholder="">
                     Target Price: <input type="number" name="TargetPrice" placeholder="" step="0.01"><br><br>
@@ -49,7 +47,7 @@
                                     <option value="GTC">Good Till Day</option>
                                 </select><br><br>
                     <button onclick="" type="submit">Place Order</button>
-                </form>
+                </form> 
                 <form id="Intraday_Sell" class="formElements"  action="#">
                     <input type="text" style="display:none;" value="IS" name="TRAIT">
                     Select Price Order Type: <select name="LimitCheck" class="LimitCheck">
