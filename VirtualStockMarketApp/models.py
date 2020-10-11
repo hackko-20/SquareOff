@@ -5,14 +5,13 @@ from django.contrib import admin
 
 # Create your models here.
 
-# User model stores records for every registered user.
-
 class User(models.Model):
     first_name = models.CharField(max_length=64)
     last_name = models.CharField(max_length=64)
     username = models.CharField(max_length=30, unique=True)
     password = models.CharField(max_length=30)
-
+    balance = models.DecimalField(max_digits=50, decimal_places=5, null=True)
+    
 class Favourites(models.Model):
     userID = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     stock_symbol = models.CharField(max_length=64)

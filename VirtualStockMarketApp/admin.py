@@ -3,7 +3,7 @@ from .models import User, Favourites, TransactionHistory, StocksOwned, OrderHist
 
 #Register your models here.
 class UserAdmin(admin.ModelAdmin):
-    list_display = ("first_name", "last_name", "username", "password")
+    list_display = ("first_name", "last_name", "username", "password", "balance")
 
 class FavouritesAdmin(admin.ModelAdmin):
     list_display = ("userID", "stock_symbol")

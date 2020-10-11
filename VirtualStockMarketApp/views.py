@@ -123,7 +123,7 @@ def portfolio(request):
     user_stocks_owned = models.StocksOwned.objects.filter(id = request.session.get('user_id'))
 
     # calculation of net worth of the user
-    net_worth = 0
+    net_worth = user.balance
     for row in user_stocks_owned:
         quantity = user_stocks_owned.get(stock_symbol = row.stock_symbol)
         url = "https://cloud.iexapis.com/" + "stable/stock/" + row.stock_symbol + "/quote?token=" + api_key + "&filter=iexRealtimePrice"
@@ -199,9 +199,21 @@ def place_order(request):
         share_price = share_price
     )
 
+    # getting the user's balance.
+
+    # if user opts for Cash Buy
+
+
+
+
     new_order.save()
 
 def explore(request):
+
+    # if user is not logged in
+    if not request.user.get('user_id'):
+        return HttpResponseRedirect(reverse(login_view))
+    
     return render(request, 'VirtualStockMarketApp/BuySell.html')
 
 def home(request):
