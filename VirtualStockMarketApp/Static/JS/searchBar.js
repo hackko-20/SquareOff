@@ -9,7 +9,7 @@ function search_api() {
     fetch(url)
         .then(response => {
             
-            if(response.status === 200)
+            if (response.status === 200)
             {
                 stock = response.json();
                 var element = document.createElement("div");
@@ -48,7 +48,7 @@ function openForm(evt, formName ) {
 function switchCL() {
     var field = document.getElementById("LimitCheck")[0].value;
     var element = document.createElement("div");
-    comsole.log("in");
+    console.log("in");
     if(value === "current")
     {
         element.innerHTML = '<input type="number" name="price" placeholder="current price">';

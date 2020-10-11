@@ -148,38 +148,32 @@ def portfolio(request):
         "user": user
     })
 
-def explore(request):
-    pass
-
-
 def place_order(request):
 
     if not request.session.get("user_id"):
         return HttpResponseRedirect(reverse(login_view))
-
-    if request.method == "GET":
-        return render(request, 'VirtualStockMarketApp/BuySell.html')    
     
-    trait = request.POST["TRAIT"]
-    stock_symbol = request.POST["stock_symbol"]
-    if request.POST["LimitCheck"] is not 'limit':
-        limit_price = None
-    else:
-        limit_price = request.POST["price"]
-    quantity = request.POST["quantity"]
-    GTC = None
-    if limit_price not None:
+    if request.method == "POST": 
+        trait = request.POST["TRAIT"]
+        stock_symbol = request.POST["stock_symbol"]
+        if request.POST["LimitCheck"] is not 'limit':
+            limit_price = None
+        else:
+            limit_price = request.POST["price"]
+        quantity = request.POST["quantity"]
         GTC = None
-    elif request.POST["OrderType"] == "GTC":
-        GTC = True
-    else: 
-        GTC = False
-    share_price = request.POST["price"]
-    if limit_price is None:
-        status_pending = False
-    else:
-        status_pending = True
-    timestamp = date.today()
+        if limit_price not None:
+            GTC = None
+        elif request.POST["OrderType"] == "GTC":
+            GTC = True
+        else: 
+            GTC = False
+        share_price = request.POST["price"]
+        if limit_price is None:
+            status_pending = False
+        else:
+            status_pending = True
+        timestamp = date.today()
 
     # creating object
     new_order = models.OrderHistory (
@@ -193,6 +187,11 @@ def place_order(request):
         limit_price = limit_price,
         share_price = share_price
     )
+
+    new_order.save()
+
+def explore(request):
+    return render(request, 'VirtualStockMarketApp/BuySell.html')
 
 def home(request):
     if not request.session.get('user_id'):
