@@ -15,7 +15,7 @@ class StocksOwnedAdmin(admin.ModelAdmin):
     list_display = ("userID", "stock_symbol", "quantity")
 
 class OrderHistoryAdmin(admin.ModelAdmin):
-    list_display = ("userID", "stock_symbol", "trait", "quantity", "status_pending", "limit_price", "share_price", "GTC")
+    list_display = ("userID", "stock_symbol", "trait", "quantity","timestamp", "status_pending", "limit_price", "stop_loss", "target_price", "price", "GTC")
 
 admin.site.register(User, UserAdmin)
 admin.site.register(Favourites, FavouritesAdmin)
