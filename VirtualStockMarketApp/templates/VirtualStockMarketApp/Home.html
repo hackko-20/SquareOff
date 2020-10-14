@@ -1,11 +1,40 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'CSS/Portfolio.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <title>Home</title>
 </head>
 <body>
+        <div class="header">
+                <div class="logo"></div>
+                <div class="heading"><h1>Hello, Trader {{ user.first_name }}</h1></div>
+            </div>
+            <div class="accordion" id="accordionDisplay">
+                <div class = "navbar">
+                    <ul class="nav">
+                        <li class="nav-item" id="headingOne">
+                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#NW" aria-expanded="true" aria-controls="NW">Profile</button>
+                        </li>
+                        <li class="nav-item" id="headingTwo">
+                            <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#TH" aria-expanded="false" aria-controls="TH">Transaction History</button>
+                        </li>
+                        <li class="nav-item" id="headingThree"></li>
+                        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#PL" aria-expanded="false" aria-controls="PL">Profit/Loss Statement</button>
+                        </li>
+                        <li class="nav-item" id="headingFour">
+                            <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#FV" aria-expanded="false" aria-controls="FV">Favourites</button>
+                        </li>   
+                    </ul>
+                    <div class="ExploreButton"><a href="explore">Go To Explore Menu!</a></div>
+                </div>
     <div>This page displays user's favourites and trending stocks.</div>
     <div>
         <ul>
@@ -14,5 +43,20 @@
         {% endfor %}
         </ul>
     </div>
+    <script type="text/javascript">
+        let api_key = "pk_245073c85596466aa6afff012f007125";
+        var symbol = "{{ favStocks.stock_symbol }}";
+        let url = "https://cloud.iexapis.com/" + "stable/stock/" + symbol + "/quote?token=" + api_key;
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                    console.log("in data");
+                    var x=data.latestPrice;
+                    document.getElementById("stock_symbolCol").innerHTML = " " + x + " ";
+            })
+            .catch(error => {
+                alert("stock symbol not found");
+            });
+    </script>
 </body>
 </html>
