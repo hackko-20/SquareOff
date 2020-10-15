@@ -31,13 +31,18 @@ def register_view(request):
         last_name = request.POST["last_name"]
         username = request.POST["username"]
         password = request.POST["password"]
+        confirm_password = request.POST["cpassword"]
 
         # check empty fields
         if first_name == '' or last_name == '' or username == '' or password == '':
             return render(request, 'VirtualStockMarketApp/Register.html', {
                 "message": "All fields are required."
             })
-            
+
+        if password != confirm_password:
+            return render(request, 'VirtualStockMarketApp/Register.html', {
+                "message": "Please confirm your password again."
+            }) 
         # create object
         user = models.User(
             first_name = first_name, 
@@ -169,7 +174,7 @@ def place_order(request):
             response = requests.get(url)
             stock_details = response.json()
             return render(request, 'VirtualStockMarketApp/BuySell.html', {"stock": stock_details})
-        return HttpResponseRedirect(reverse('explore'))   
+        return HttpResponseRedirect(reverse(explore))   
     
     # if the user submits data to place an order
     trait = request.POST["TRAIT"]
@@ -324,8 +329,5 @@ def home(request):
     user_favourites = models.Favourites.objects.filter(id = request.session.get('user_id'))
     return render(request,'VirtualStockMarketApp/Home.html', {"user_favourites": user_favourites}) 
 
-def buySell(request):
-    return render(request,"VirtualStockMarketApp/BuySell.html",{})
-
 def explore(request):
-    return render(request,"VirtualStockMarketApp/Explore.html",{})
+    return render(request, 'VirtualStockMarketApp/Explore.html')
