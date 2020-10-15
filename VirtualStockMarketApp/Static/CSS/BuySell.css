@@ -9,6 +9,12 @@
     
 }
 
+body {
+    height: 100%;
+    width: 100%;
+    background-color: #4169E1; 
+}
+
 .StockLink {
     padding: 15px;
     background-color: #ffffff;
@@ -19,8 +25,7 @@
 }
 
 .mainContent {
-    background-color: #4169E1; 
-    height: 100vh;
+    height: 100%;
     width:100%;
 }
 
@@ -40,16 +45,6 @@
     border-radius: 12px; 
     border-color: black;
     margin-right: 10px;
-}
-
-input[type=text] { 
-     width: 30%; 
-     -webkit-transition: width 0.15s ease-in-out; 
-     transition: width 0.15s ease-in-out; 
-} 
-
-input[type=text]:focus { 
-    width: 50%; 
 } 
 
 .tab {
@@ -91,10 +86,11 @@ input[type=text]:focus {
 }
 
 input[type=number] {
-    box-sizing: border-box;
-    border: 10px;
-    border-color: black;
     margin-left: 30px;
+    margin-right: 20px;
+    background-color: #d0d1d0;
+    padding: 5px;
+    border-radius: 2px;
 }
 
 .formElements > button {
@@ -107,16 +103,63 @@ input[type=number] {
     border-radius: 2px;;
 }
 .LimitCheck {
+    margin-left:30px;
     padding: 5px;
     border-radius: 2px;
+    background-color: #d0d1d0;
+}
+
+.OrderType {
+    margin-left:30px;
+    padding: 5px;
+    border-radius: 2px;
+    background-color: #d0d1d0;
 }
 
 .limit_current {
     display: inline;
 }
 
+/* Stock details div */
 .stockDetails {
+    padding: 10px;
     margin: 10px;
-    color: #ffffff;
+    background-color: #ffffff;
     font-family: "Montserrat";
+}
+
+.stockDetails > h2 {
+    color: black;
+    font-weight: 1200;
+    font-size: 50px;
+    text-align: center;
+    padding: 10px;
+}
+
+.cards {
+    display: flex;
+    width:100%;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    border-radius: 0px;
+    border: 0px;
+    justify-content: space-evenly;
+}
+
+.card {  
+    padding: 10px;
+    text-align: center;
+    color: #ffffff;
+    font-weight: 1000;
+    width: 20%;
+    font-size: 20px;
+    height:auto;
+    align-items: center;
+}
+
+
+@media screen and (max-width: 800px) {
+    .cards .card {
+        width: 100%;
+    }
 }

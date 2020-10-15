@@ -167,8 +167,12 @@ def place_order(request):
     if request.method == "GET":
         stock_symbol = "NOT FOUND"
         if request.GET.get("ss") is not None:
-            stock_symbol = request.GET["ss"]
-        return render(request, 'VirtualStockMarketApp/BuySell.html', {"stock_symbol": stock_symbol})   
+            stock = request.GET["ss"]
+            url = "https://cloud.iexapis.com/" + "stable/stock/" + stock + "/quote?token=" + api_key
+            response = requests.get(url)
+            stock_details = response.json()
+            return render(request, 'VirtualStockMarketApp/BuySell.html', {"stock": stock_details})
+        return HttpResponseRedirect(reverse('explore'))   
     
     '''
     This part of the view handles the POST query of the user, when he submits the form for placing an order

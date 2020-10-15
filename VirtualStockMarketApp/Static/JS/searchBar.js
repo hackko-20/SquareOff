@@ -37,17 +37,22 @@ function openForm(evt, formName ) {
     evt.currentTarget.className += " active";
 }
 
-function switchCL() {
-    var field = document.getElementById("LimitCheck")[0].value;
-    var element = document.createElement("div");
-    comsole.log("in");
-    if(value === "current")
+function switchCL(e, price) {
+    console.log("iinnnn");
+    var value = e.target.value;
+    var field = document.getElementsByClassName("price");
+    console.log("in");
+    for(var i=0;i<field.length;i++)
     {
-        element.innerHTML = '<input type="number" name="price" placeholder="current price">';
+        if(value === "current")
+        {
+            field[i].setAttribute("placeholder",price);
+            field[i].readonly = true;
+        }
+        else
+        {
+            field[i].setAttribute("placeholder","");
+            field[i].removeAttribute("readonly");
+        }       
     }
-    else
-    {
-        element.innerHTML = '<input type="number" name="price" placeholder="limit price">';
-    }
-    document.getElementById("Intraday").appendChild(element);
 }

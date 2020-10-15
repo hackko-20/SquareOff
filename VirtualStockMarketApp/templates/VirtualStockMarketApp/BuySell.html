@@ -12,18 +12,28 @@
         <title>Place order</title>
     </head>
     <body>
-        <!-- navbar -->
-        <div style="background-color: #4169E1;"><br><br></div>
-        
-        <div class="mainContent">
+        <div class="mainContent" style="background-color: #4169E1;">
             <!-- Stock Details -->
             <div class="stockDetails">
-                {% if stock_symbol != "NOT FOUND" %}
-                <p>{{ stock_symbol }}</p>
-                {% else %}
-                <p>Search for symbol</p>
-                {% endif %}
-            </div>
+                {% if stock %}
+                <h2>{{ stock.companyName }}</h2><br>
+                <div class="cards">
+                    <div class="card" style="border-radius: 0;background-color: #f39d2c;">
+                        <p>Market Capital: {{ stock.marketCap }}</p>
+                    </div>
+                    <div class="card" style="border-radius: 0;background-color: #96f32c;">
+                        <p>Volume Traded: {{ stock.volume }}</p>
+                    </div>
+                    <div class="card" style="border-radius: 0;background-color: #6aabf5;">
+                        <p>Week 52 High Price: {{ stock.week52High }}</p>
+                    </div>
+                    <div class="card" style="border-radius: 0;background-color: #f35670;">
+                        <p>Week 52 Low Price: {{ stock.week52Low }}</p>
+                    </div>
+                </div>
+                
+                <div class="graphs"></div>
+            </div><br>
             <!-- buySell form -->
             <div class="tab">
                 <button class="tablinks" onclick="openForm(event, 'Intraday_Buy')">Intraday Buy</button>
@@ -35,45 +45,45 @@
                 <form id="Intraday_Buy" class="formElements"  action="#">
                     <input type="text" style="display:none;" value="IB" name="TRAIT">
                     <input type="text" style="display:None;" name="stock_symbol">
-                    Select Price Order Type: <select name="LimitCheck" class="LimitCheck">
+                    Select Price Order Type: <select name="LimitCheck" class="LimitCheck" onchange="switchCL(event,{{ stock.latestPrice }})">
                                                 <option value="current">Current Price</option>
                                                 <option value="limit">Limit price</option>
                                             </select><br><br>
-                    Price: <input type="number" name="price" placeholder="" step="0.01"><br><br>
-                    Quantity: <input type="number" name="quantity" placeholder="">
-                    Target Price: <input type="number" name="TargetPrice" placeholder="" step="0.01"><br><br>
+                    Price: <input type="number" name="price" class="price" placeholder="{{ stock.latestPrice }}" readonly step="0.01"><br><br>
+                    Quantity: <input type="number" name="quantity" placeholder=""><br><br>
+                    Target Price: <input type="number" name="TargetPrice" placeholder="" step="0.01">
                     Stop Loss: <input type="number" name="StopLoss" placeholder="" step="0.01"><br><br>
-                    Order type: <select name="OrderType" style="margin-left: 30px;"><br><br>
+                    Order type: <select name="OrderType" class="OrderType"><br><br>
                                     <option value="GTC">Good Till Day</option>
                                 </select><br><br>
                     <button onclick="" type="submit">Place Order</button>
                 </form> 
                 <form id="Intraday_Sell" class="formElements"  action="#">
                     <input type="text" style="display:none;" value="IS" name="TRAIT">
-                    Select Price Order Type: <select name="LimitCheck" class="LimitCheck">
+                    Select Price Order Type: <select name="LimitCheck" class="LimitCheck" onchange="switchCL(event,{{ stock.latestPrice }})">
                                                 <option value="current">Current Price</option>
                                                 <option value="limit">Limit price</option>
                                              </select><br><br>
-                    Price: <input type="number" name="price" placeholder="" step="0.01"><br><br>
-                    Quantity: <input type="number" name="quantity" placeholder="">
-                    Target Price: <input type="number" name="TargetPrice" placeholder="" step="0.01"><br><br>
+                    Price: <input type="number" name="price" class="price" placeholder="{{ stock.latestPrice }}" readonly step="0.01"><br><br>
+                    Quantity: <input type="number" name="quantity" placeholder=""><br><br>
+                    Target Price: <input type="number" name="TargetPrice" placeholder="" step="0.01">
                     Stop Loss: <input type="number" name="StopLoss" placeholder="" step="0.01"><br><br>
-                    Order type: <select name="OrderType" style="margin-left: 30px;"><br><br>
+                    Order type: <select name="OrderType" class="OrderType"><br><br>
                                     <option value="GTC">Good Till Day</option>
                                 </select><br><br>
                     <button onclick="" type="submit">Place Order</button>
                 </form>
                 <form id="Cash_Buy" action="" class="formElements"  action="#" name="TRAIT">
                     <input type="text" style="display:none;" value="CB">
-                    Select Price Order Type: <select name="LimitCheck" class="LimitCheck">
+                    Select Price Order Type: <select name="LimitCheck" class="LimitCheck" onchange="switchCL(event,{{ stock.latestPrice }})">
                         <option value="current">Current Price</option>
                         <option value="limit">Limit price</option>
                     </select><br><br>
-                    Price: <input type="number" name="price" placeholder="" step="0.01"><br><br>
-                    Quantity: <input type="number" name="quantity" placeholder="">
-                    Target Price: <input type="number" name="TargetPrice" placeholder="" step="0.01"><br><br>
+                    Price: <input type="number" name="price" class="price" placeholder="{{ stock.latestprice }}" readonly step="0.01"><br><br>
+                    Quantity: <input type="number" name="quantity" placeholder=""><br><br>
+                    Target Price: <input type="number" name="TargetPrice" placeholder="" step="0.01">
                     Stop Loss: <input type="number" name="StopLoss" placeholder="" step="0.01"><br><br>
-                    Order type: <select name="OrderType" style="margin-left: 30px;"><br><br>
+                    Order type: <select name="OrderType" class="OrderType"><br><br>
                                     <option value="GTC">Good Till Day</option>
                                     <option value="GTD">Good Till Cancelled</option>
                                 </select><br><br>
@@ -81,15 +91,15 @@
                 </form>
                 <form id="Cash_Sell" class="formElements"  action="#">
                     <input type="text" style="display:none;" value="CS" name="TRAIT">
-                    Select Price Order Type: <select name="LimitCheck" class="LimitCheck">
+                    Select Price Order Type: <select name="LimitCheck" class="LimitCheck" onchange="switchCL(event,{{ stock.latestPrice }})">
                         <option value="current">Current Price</option>
                         <option value="limit">Limit price</option>
                     </select><br><br>
-                    Price: <input type="number" name="price" placeholder="" step="0.01"><br><br>
-                    Quantity: <input type="number" name="quantity" placeholder="">
-                    Target Price: <input type="number" name="TargetPrice" placeholder="" step="0.01"><br><br>
+                    Price: <input type="number" name="price" class="price" placeholder="{{ stock.latestPrice }}" readonly step="0.01"><br><br>
+                    Quantity: <input type="number" name="quantity" placeholder=""><br><br>
+                    Target Price: <input type="number" name="TargetPrice" placeholder="" step="0.01">
                     Stop Loss: <input type="number" name="StopLoss" placeholder="" step="0.01"><br><br>
-                    Order type: <select name="OrderType" style="margin-left: 30px;"><br><br>
+                    Order type: <select name="OrderType" class="OrderType"><br><br>
                                     <option value="GTC">Good Till Day</option>
                                     <option value="GTD">Good Till Cancelled</option>
                                 </select><br><br>
@@ -97,6 +107,7 @@
                 </form>
             </div>
         </div>
+        {% endif %}
         <!-- link to JS file-->
         <script src="{% static 'JS/searchBar.js' %}"></script>
     </body>
