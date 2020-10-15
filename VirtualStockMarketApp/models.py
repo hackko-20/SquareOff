@@ -1,18 +1,17 @@
 from django.db import models
 from django.contrib import admin
-#from django.utils import timezone
+from django.utils import timezone
 
 
 # Create your models here.
-
-# User model stores records for every registered user.
 
 class User(models.Model):
     first_name = models.CharField(max_length=64)
     last_name = models.CharField(max_length=64)
     username = models.CharField(max_length=30, unique=True)
     password = models.CharField(max_length=30)
-
+    balance = models.DecimalField(max_digits=50, decimal_places=5, null=True, default=1.e7)
+    
 class Favourites(models.Model):
     userID = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     stock_symbol = models.CharField(max_length=64)
@@ -42,14 +41,11 @@ class OrderHistory(models.Model):
     stock_symbol = models.CharField(max_length=64)
     trait = models.CharField(max_length=32, choices = TRAITS)
     quantity = models.IntegerField(default=0)
-    #timestamp = models.DateTimeField(default=timezone.now(),null=False)
+    timestamp = models.DateTimeField(null=False)
     status_pending = models.BooleanField(null=False, default=True)
-    limit_price = models.DecimalField(null=True, decimal_places=2, max_digits=20, default=0)
-    share_price = models.DecimalField(decimal_places=2, max_digits=20, default=0)
+    limit_price = models.BooleanField(null=False, default=True)
+    price = models.DecimalField(decimal_places=2, max_digits=20, default=0)
+    stop_loss = models.DecimalField(decimal_places=2, max_digits=20, default=0)
+    target_price = models.DecimalField(decimal_places=2, max_digits=20, default=0)
     GTC = models.BooleanField(null=True)
 
-# dont need txn history
-# limit price could be a bool
-
-# dont need txn history
-# limit price could be a bool

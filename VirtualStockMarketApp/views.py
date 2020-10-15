@@ -3,12 +3,13 @@ from hashlib import sha256
 from . import models
 from django.db import IntegrityError
 from django.urls import reverse
-import pandas as pd
 from iexfinance.stocks import get_historical_data
-import requests
 from django.http import HttpResponseRedirect, request, HttpResponse
+from django.utils import timezone
 import os
 import json
+import requests
+import pandas as pd
 
 # api key 
 if not os.getenv('IEX_TOKEN'):
@@ -105,11 +106,15 @@ def logout_view(request):
     return HttpResponseRedirect(reverse(register_view))
 
 def portfolio(request):
-    '''
-    This view renders the portfolio, the page where all the information about the user, that is, stocks currently onwed, orders pending,
-    transaction history and favourites is shown.
-    '''
-    #if the user has not logged in
+    """
+    This view renders the portfolio, the page where all the information about the user is shown.
+    API Reference:
+        # url = "https://cloud.iexapis.com/" + "stable/stock/" + "MSFT" + "/quote?token=" + api_key + "&filter=iexRealtimePrice"
+        # response = requests.get(url)
+        # NW= response.json() 
+        # net_worth = NW["iexRealtimePrice"]
+    """
+    # if the user has not logged in
     if not request.session.get('user_id'):
         return HttpResponseRedirect(reverse(login_view))
 
@@ -118,16 +123,8 @@ def portfolio(request):
     user_txn_history = models.TransactionHistory.objects.filter(id = request.session.get('user_id'))
     user_stocks_owned = models.StocksOwned.objects.filter(id = request.session.get('user_id'))
 
-    
-    '''Just for API reference for all the team mates '''
-    # url = "https://cloud.iexapis.com/" + "stable/stock/" + "MSFT" + "/quote?token=" + api_key + "&filter=iexRealtimePrice"
-    # response = requests.get(url)
-    # NW= response.json() 
-    # net_worth = NW["iexRealtimePrice"]
-    ''' Just for reference '''
-
     # calculation of net worth of the user
-    net_worth = 0
+    net_worth = user.balance
     for row in user_stocks_owned:
         quantity = user_stocks_owned.get(stock_symbol = row.stock_symbol)
         url = "https://cloud.iexapis.com/" + "stable/stock/" + row.stock_symbol + "/quote?token=" + api_key + "&filter=iexRealtimePrice"
@@ -156,14 +153,14 @@ def portfolio(request):
     })
 
 def place_order(request):
+    """
+    The page displays in-depth data about a particular stock. 
+    The page also accepts data to process an order, if placed by a user.
+    """
     # if the user has not logged in
     if not request.session.get("user_id"):
         return HttpResponseRedirect(reverse(login_view))
 
-    '''
-    if the user requests for the information of a stock through the explore menu page, a GET request is sent which
-    is being handled here.
-    '''
     if request.method == "GET":
         stock_symbol = "NOT FOUND"
         if request.GET.get("ss") is not None:
@@ -174,29 +171,23 @@ def place_order(request):
             return render(request, 'VirtualStockMarketApp/BuySell.html', {"stock": stock_details})
         return HttpResponseRedirect(reverse('explore'))   
     
-    '''
-    This part of the view handles the POST query of the user, when he submits the form for placing an order
-    to buy/sell a particular stock.
-    '''
+    # if the user submits data to place an order
     trait = request.POST["TRAIT"]
     stock_symbol = request.POST["stock_symbol"]
-    if request.POST["LimitCheck"] != 'limit':
-        limit_price = None
+    if request.POST["LimitCheck"] == 'limit':
+        limit_price = True
     else:
-        limit_price = request.POST["price"]
+        limit_price = False
+    price = request.POST["price"]
     quantity = request.POST["quantity"]
-    GTC = None
-    if limit_price is not None:
+    if limit_price is False:
         GTC = None
     elif request.POST["OrderType"] == "GTC":
         GTC = True
     else: 
         GTC = False
-    share_price = request.POST["price"]
-    if limit_price is None:
-        status_pending = False
-    else:
-        status_pending = True
+    stop_loss = request.POST["StopLoss"]
+    target_price = request.POST["TargetPrice"]
 
     # creating object
     new_order = models.OrderHistory (
@@ -205,10 +196,126 @@ def place_order(request):
         trait = trait,
         quantity = quantity,
         GTC = GTC,
-        status_pending = status_pending,
         limit_price = limit_price,
-        share_price = share_price
+        price = price,
+        timestamp = timezone.now()
     )
+
+    # getting the user's current data
+    user = models.User.objects.get(id=request.session["user_id"])
+    user_stocks_owned = models.StocksOwned.filter(userID=request.session["user_id"])
+    current_balance = user.balance
+
+    # if user opts for Cash Buy
+    if trait == 'CB':
+
+        # if user opts for Current Price
+        if not limit_price:
+            
+            # if user can afford the purchase
+            if current_balance >= price:
+
+                # modify user's balance
+                user.balance -= (quantity * price)
+
+                # modify user's stocks owned
+                if user_stocks_owned.get(stock_symbol=stock_symbol):
+                    user_stocks_owned.get(stock_symbol=stock_symbol).quantity += quantity
+                else:
+                    new_stock = models.StocksOwned(userID=user.id, stock_symbol=stock_symbol)
+                    new_stock.save()
+
+                # add transaction to history
+                new_txn = models.TransactionHistory(
+                    userID = user.id,
+                    stock_symbol = stock_symbol,
+                    bought = True,
+                    quantity = quantity,
+                    share_price = price
+                )
+                new_txn.save()
+
+                # if no future need of record
+                if stop_loss == 0 and target_price == 0:
+                    return HttpResponseRedirect(reverse(portfolio))
+                
+                # if the record may be needed in the future
+                else:
+                    new_order.save()
+                    return HttpResponseRedirect(reverse(portfolio))
+
+            # if user cannot afford the purchase
+            return render(request, 'VirtualStockMarketApp/BuySell.html', {
+                "stock_symbol": stock_symbol,
+                "message": "Your account balance is too low for the purchase."
+            })
+        
+        # if user opts for Limit Price
+        elif limit_price:
+            """ Implementation to be figured out """
+            pass
+
+    # if user opts for Cash Sell
+    elif trait == 'CS':
+
+        # if user opts for Current Price
+        if not limit_price:
+            
+            # number of shares user owns for the stock
+            if not user_stocks_owned.get(stock_symbol=stock_symbol):
+                stock_quantity = 0
+            else:
+                stock_quantity = user_stocks_owned.get(stock_symbol=stock_symbol).quantity
+
+            # if user has enough shares to sell
+            if stock_quantity >= quantity:
+
+                # modify user's balance
+                user.balance += (quantity * price)
+
+                # modify user's stocks owned
+                user_stocks_owned.get(stock_symbol=stock_symbol).quantity -= stock_quantity
+
+                # add transaction to history
+                new_txn = models.TransactionHistory(
+                    userID = user.id,
+                    stock_symbol = stock_symbol,
+                    bought = False,
+                    quantity = quantity,
+                    share_price = price
+                )
+                new_txn.save()
+
+                # if no future need of record
+                if stop_loss == 0 and target_price == 0:
+                    return HttpResponseRedirect(reverse(portfolio))
+                
+                # if the record may be needed in the future
+                else:
+                    new_order.save()
+                    return HttpResponseRedirect(reverse(portfolio))
+
+            # if user does not have enough shares to sell
+            return render(request, "VirtualStockMarketApp/BuySell.html", {
+                "stock_symbol": stock_symbol,
+                "message": "You do not hold enough shares to sell."
+            })
+
+        # if user opts for Limit Price
+        elif limit_price:
+            """
+            Implementation yet to be figured out
+            """
+            pass
+
+
+def explore(request):
+
+    # if user is not logged in
+    if not request.user.get('user_id'):
+        return HttpResponseRedirect(reverse(login_view))
+    
+    return render(request, 'VirtualStockMarketApp/BuySell.html')
 
 def home(request):
     if not request.session.get('user_id'):

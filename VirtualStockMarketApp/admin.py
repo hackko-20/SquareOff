@@ -3,7 +3,7 @@ from .models import User, Favourites, TransactionHistory, StocksOwned, OrderHist
 
 #Register your models here.
 class UserAdmin(admin.ModelAdmin):
-    list_display = ("first_name", "last_name", "username", "password")
+    list_display = ("first_name", "last_name", "username", "password", "balance")
 
 class FavouritesAdmin(admin.ModelAdmin):
     list_display = ("userID", "stock_symbol")
@@ -15,7 +15,7 @@ class StocksOwnedAdmin(admin.ModelAdmin):
     list_display = ("userID", "stock_symbol", "quantity")
 
 class OrderHistoryAdmin(admin.ModelAdmin):
-    list_display = ("userID", "stock_symbol", "trait", "quantity", "status_pending", "limit_price", "share_price", "GTC")
+    list_display = ("userID", "stock_symbol", "trait", "quantity","timestamp", "status_pending", "limit_price", "stop_loss", "target_price", "price", "GTC")
 
 admin.site.register(User, UserAdmin)
 admin.site.register(Favourites, FavouritesAdmin)
