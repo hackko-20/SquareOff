@@ -9,7 +9,6 @@ from django.utils import timezone
 import os
 import json
 import requests
-import pandas as pd
 
 # api key 
 if not os.getenv('IEX_TOKEN'):
@@ -17,7 +16,6 @@ if not os.getenv('IEX_TOKEN'):
 api_key = os.getenv('IEX_TOKEN')
 
 # Create your views here.
-
 def register_view(request):
     """
     The register_view is called by default when the user visits the website or visits '/register'. The view 
@@ -124,18 +122,20 @@ def portfolio(request):
         return HttpResponseRedirect(reverse(login_view))
 
     user = models.User.objects.get(id = request.session.get('user_id'))
-    user_favourites = models.Favourites.objects.filter(id = request.session.get('user_id'))
-    user_txn_history = models.TransactionHistory.objects.filter(id = request.session.get('user_id'))
-    user_stocks_owned = models.StocksOwned.objects.filter(id = request.session.get('user_id'))
-
+    user_favourites = models.Favourites.objects.filter(userID = request.session.get('user_id'))
+    user_txn_history = models.TransactionHistory.objects.filter(userID = request.session.get('user_id'))
+    user_stocks_owned = models.StocksOwned.objects.filter(userID = request.session.get('user_id'))
+    
     # calculation of net worth of the user
     net_worth = user.balance
+    num_stocks_owned = 0.
     for row in user_stocks_owned:
         quantity = user_stocks_owned.get(stock_symbol = row.stock_symbol)
-        url = "https://cloud.iexapis.com/" + "stable/stock/" + row.stock_symbol + "/quote?token=" + api_key + "&filter=iexRealtimePrice"
+        url = "https://cloud.iexapis.com/" + "stable/stock/" + row.stock_symbol + "/quote?token=" + api_key + "&filter=latestPrice"
         response = requests.get(url)
         present_price = response.json()
-        net_worth += (quantity * present_price["iexRealtimePrice"])
+        net_worth = float(net_worth) + (quantity.quantity * present_price["latestPrice"])
+        num_stocks_owned += quantity.quantity
 
     #  calculation of profit/loss
     total_profit = 0
@@ -154,7 +154,8 @@ def portfolio(request):
         "user_transactHistory": user_txn_history, 
         "net_worth": net_worth, 
         "profit": total_profit, 
-        "user": user
+        "user": user,
+        "user_stocks_owned": num_stocks_owned
     })
 
 def place_order(request):
@@ -183,8 +184,8 @@ def place_order(request):
         limit_price = True
     else:
         limit_price = False
-    price = request.POST["price"]
-    quantity = request.POST["quantity"]
+    price = float(request.POST["price"])
+    quantity = int(request.POST["quantity"])
     if limit_price is False:
         GTC = None
     elif request.POST["OrderType"] == "GTC":
@@ -196,7 +197,7 @@ def place_order(request):
 
     # creating object
     new_order = models.OrderHistory (
-        userID = request.session["user_id"], 
+        userID = models.User.objects.get(id = request.session['user_id']), 
         stock_symbol = stock_symbol,
         trait = trait,
         quantity = quantity,
@@ -208,7 +209,7 @@ def place_order(request):
 
     # getting the user's current data
     user = models.User.objects.get(id=request.session["user_id"])
-    user_stocks_owned = models.StocksOwned.filter(userID=request.session["user_id"])
+    user_stocks_owned = models.StocksOwned.objects.filter(userID=request.session["user_id"])
     current_balance = user.balance
 
     # if user opts for Cash Buy
@@ -218,10 +219,10 @@ def place_order(request):
         if not limit_price:
             
             # if user can afford the purchase
-            if current_balance >= price:
+            if current_balance >= (quantity * price):
 
                 # modify user's balance
-                user.balance -= (quantity * price)
+                user.balance = float(user.balance) - (float(quantity) * float(price))
 
                 # modify user's stocks owned
                 if user_stocks_owned.get(stock_symbol=stock_symbol):
@@ -232,7 +233,7 @@ def place_order(request):
 
                 # add transaction to history
                 new_txn = models.TransactionHistory(
-                    userID = user.id,
+                    userID = models.User.objects.get(id = request.session['user_id']),
                     stock_symbol = stock_symbol,
                     bought = True,
                     quantity = quantity,
@@ -315,7 +316,6 @@ def place_order(request):
 
 
 def explore(request):
-
     # if user is not logged in
     if not request.user.get('user_id'):
         return HttpResponseRedirect(reverse(login_view))
