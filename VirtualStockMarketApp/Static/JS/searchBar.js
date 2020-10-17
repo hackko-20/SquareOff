@@ -15,7 +15,7 @@ function search_api() {
                 element.setAttribute("class","StockLink");
                 document.getElementById("ss").value = data.symbol;
                 console.log(document.getElementById("ss").value);
-                element.innerHTML="See details about the stock" + data.companyName;
+                element.innerHTML="Click here to see details about the share prices of " + data.companyName + "!";
                 document.getElementById("searchOption").appendChild(element);
                 })
         .catch(error =>{

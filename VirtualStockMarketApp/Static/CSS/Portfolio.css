@@ -208,13 +208,14 @@ body {
     text-align: center;
     color: #ffffff;
 }
+/* footer */
 .site-footer
 {
-  background-color:rgba(65, 105, 225, 0.651);
+  background-color:rgba(33, 78, 214, 0.651);
   padding:45px 0 20px;
   font-size:15px;
   line-height:24px;
-  color:#737373;
+  color:#ececec;
 }
 .site-footer hr
 {
@@ -235,7 +236,7 @@ body {
 }
 .site-footer a
 {
-  color:#737373;
+  color:#ececec;
 }
 .site-footer a:hover
 {
