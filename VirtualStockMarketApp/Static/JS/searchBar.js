@@ -11,19 +11,19 @@ function search_api() {
         .then(response => response.json())
         .then(data => {
                 var element = document.createElement("button");
-                element.setAttribute("type","submit");
-                element.setAttribute("class","StockLink");
+                element.setAttribute("type", "submit");
+                element.setAttribute("class", "StockLink");
                 document.getElementById("ss").value = data.symbol;
                 console.log(document.getElementById("ss").value);
-                element.innerHTML="Click here to see details about the share prices of " + data.companyName + "!";
+                element.innerHTML= data.companyName;
                 document.getElementById("searchOption").appendChild(element);
-                })
+        })
         .catch(error =>{
             alert("symbol not found");
         });  
 }
 
-function openForm(evt, formName ) {
+function openForm(evt, formName) {
     var i, formElement, tablinks;
     formElement = document.getElementsByClassName("formElements");
     for (i = 0; i < formElement.length; i++) {
@@ -42,16 +42,16 @@ function switchCL(e, price) {
     var value = e.target.value;
     var field = document.getElementsByClassName("price");
     console.log("in");
-    for(var i=0;i<field.length;i++)
+    for (var i=0;i<field.length;i++)
     {
-        if(value === "current")
+        if (value === "current")
         {
-            field[i].setAttribute("placeholder",price);
+            field[i].setAttribute("placeholder", price);
             field[i].readonly = true;
         }
         else
         {
-            field[i].setAttribute("placeholder","");
+            field[i].setAttribute("placeholder", "");
             field[i].removeAttribute("readonly");
         }       
     }
