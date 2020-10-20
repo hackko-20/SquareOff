@@ -314,7 +314,6 @@ def place_order(request):
             """
             pass
 
-
 def explore(request):
     # if user is not logged in
     if not request.user.get('user_id'):
