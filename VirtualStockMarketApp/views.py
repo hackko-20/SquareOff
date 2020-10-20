@@ -151,11 +151,11 @@ def portfolio(request):
     
     return render(request, 'VirtualStockMarketApp/Portfolio.html', {
         "user_favourites": user_favourites, 
-        "user_transactHistory": user_txn_history, 
+        "user_transact_history": user_txn_history, 
         "net_worth": net_worth, 
         "profit": total_profit, 
         "user": user,
-        "user_stocks_owned": num_stocks_owned
+        "user_stocks_owned": user_stocks_owned
     })
 
 def place_order(request):
@@ -226,7 +226,9 @@ def place_order(request):
 
                 # modify user's stocks owned
                 if user_stocks_owned.filter(stock_symbol=stock_symbol):
-                    models.StocksOwned.objects.get(stock_symbol=stock_symbol, userID=user).update(quantity += 1)
+                    models.StocksOwned.objects.filter(stock_symbol=stock_symbol, userID=user).update(
+                        quantity = user_stocks_owned.get(stock_symbol=stock_symbol).quantity + 1
+                    )
                 else:
                     new_stock_owned = models.StocksOwned (
                         userID = user,
