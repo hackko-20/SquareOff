@@ -146,7 +146,7 @@ body {
 }
 
 /* Transaction History section */
-.transactHistory {
+.transactHistory, .stocksOwned {
     padding: 20px 20px 20px 20px; 
     background-color:#4169E1;
     flex: 1;
@@ -154,7 +154,7 @@ body {
     justify-content: space-around; 
 }
 
-.transactHistory > h3 {
+.transactHistory > h3, .stocksOwned > h3 {
     text-align: center;
     color: #ffffff;
     font-family: "Montserrat";
@@ -163,7 +163,7 @@ body {
     
 }
 
-.tableHistory {
+.tableHistory, .tableStocks {
     background-color: #ffffff;
 }
 .columnHeads {
