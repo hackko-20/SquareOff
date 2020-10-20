@@ -225,11 +225,15 @@ def place_order(request):
                 user.balance = float(user.balance) - (float(quantity) * float(price))
 
                 # modify user's stocks owned
-                if user_stocks_owned.get(stock_symbol=stock_symbol):
-                    user_stocks_owned.get(stock_symbol=stock_symbol).quantity += quantity
+                if user_stocks_owned.filter(stock_symbol=stock_symbol):
+                    models.StocksOwned.objects.get(stock_symbol=stock_symbol, userID=user).update(quantity += 1)
                 else:
-                    new_stock = models.StocksOwned(userID=user.id, stock_symbol=stock_symbol)
-                    new_stock.save()
+                    new_stock_owned = models.StocksOwned (
+                        userID = user,
+                        stock_symbol = stock_symbol,
+                        quantity = 1
+                    )
+                    new_stock_owned.save()
 
                 # add transaction to history
                 new_txn = models.TransactionHistory(
