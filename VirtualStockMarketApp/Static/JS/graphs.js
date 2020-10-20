@@ -1,7 +1,7 @@
-function openGraph(evt, GraphID) 
+function openGraph(evt, GraphID)
 {
-    var graphs = document.getElementsByClassName('graph');
-    for(var i=0;i<graphs.length;i++)
+    let graphs = document.getElementsByClassName('graph');
+    for(let i = 0; i < graphs.length; i++)
     {
         graphs[i].style.display = "none";
     }
@@ -10,20 +10,20 @@ function openGraph(evt, GraphID)
 
 am4core.useTheme(am4themes_animated);
 
-var chart = am4core.create("Candlestick", am4charts.XYChart);
+let chart = am4core.create("Candlestick", am4charts.XYChart);
 chart.paddingRight = 20;
 
 chart.dateFormatter.inputDateFormat = "k:m";
 
-var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
 dateAxis.renderer.grid.template.location = 0;
 dateAxis.renderer.minGridDistance = 60;
 //dateAxis.groupData = true;
 
-var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
 valueAxis.tooltip.disabled = true;
 
-var series = chart.series.push(new am4charts.CandlestickSeries());
+let series = chart.series.push(new am4charts.CandlestickSeries());
 series.dataFields.dateX = "minute";
 series.dataFields.valueY = "close";
 series.dataFields.openValueY = "open";
@@ -39,38 +39,36 @@ chart.cursor = new am4charts.XYCursor();
 
 chart.scrollbarX = new am4core.Scrollbar();
 
-let apikey = "pk_245073c85596466aa6afff012f007125";
+const apikey = "pk_245073c85596466aa6afff012f007125";
 let url = "https://cloud.iexapis.com/" + "stable/stock/" + symbol + "/intraday-prices/quote?token=" + apikey + "&filter=minute,high,low,open,close";
 console.log(url);
-chart.dataSource.url= url;
+chart.dataSource.url = url;
 
 //   "date": "2018-10-16",
 //   "open": "172.69",
 //   "high": "173.04",
 //   "low": "169.18",
 //   "close": "172.75"
-// }];
 
-var chartLG = am4core.create("Line", am4charts.XYChart);
+let chartLG = am4core.create("Line", am4charts.XYChart);
 
-
-var dateAxisLG = chartLG.xAxes.push(new am4charts.DateAxis());
+let dateAxisLG = chartLG.xAxes.push(new am4charts.DateAxis());
 dateAxisLG.renderer.grid.template.location = 0;
 dateAxisLG.renderer.minGridDistance = 60;
 
-var valueAxisLG = chartLG.yAxes.push(new am4charts.ValueAxis());
+let valueAxisLG = chartLG.yAxes.push(new am4charts.ValueAxis());
 valueAxisLG.tooltip.disabled = true;
 
 chartLG.dateFormatter.inputDateFormat = "k:m";
 //dateAxisLG.groupData = true;
 
-var seriesLG = chartLG.series.push(new am4charts.LineSeries());
+let seriesLG = chartLG.series.push(new am4charts.LineSeries());
 seriesLG.dataFields.dateX = "minute";
 seriesLG.dataFields.valueY = "average";
 ///seriesLG.groupFields.valueY = "average";
 seriesLG.tooltipText = "Average: [bold]${valueY.value}[/]";
 
-var urlLG = "https://cloud.iexapis.com/" + "stable/stock/" + symbol + "/intraday-prices/quote?token=" + apikey + "&filter=minute,average";
+let urlLG = "https://cloud.iexapis.com/" + "stable/stock/" + symbol + "/intraday-prices/quote?token=" + apikey + "&filter=minute,average";
 chartLG.dataSource.url = urlLG;
 console.log(urlLG);
 
@@ -78,17 +76,17 @@ chartLG.cursor = new am4charts.XYCursor();
 
 chartLG.scrollbarX = new am4core.Scrollbar();
 
-var chartBG = am4core.create("Bar", am4charts.XYChart);
-var dateAxisBG = chartBG.xAxes.push(new am4charts.DateAxis());
+let chartBG = am4core.create("Bar", am4charts.XYChart);
+let dateAxisBG = chartBG.xAxes.push(new am4charts.DateAxis());
 dateAxisBG.renderer.grid.template.location = 0;
 dateAxisBG.renderer.minGridDistance = 60;
 //dateAxisBG.groupData = true;
 
-var valueAxisBG = chartBG.yAxes.push(new am4charts.ValueAxis());
+let valueAxisBG = chartBG.yAxes.push(new am4charts.ValueAxis());
 valueAxisBG.tooltip.disabled = true;
 chartBG.dateFormatter.inputDateFormat = "k:m";
 
-var seriesBG = chartBG.series.push(new am4charts.OHLCSeries());
+let seriesBG = chartBG.series.push(new am4charts.OHLCSeries());
 seriesBG.dataFields.dateX = "minute";
 seriesBG.dataFields.valueY = "close";
 seriesBG.dataFields.openValueY = "open";

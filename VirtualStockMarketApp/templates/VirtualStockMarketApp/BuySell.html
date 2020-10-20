@@ -101,7 +101,7 @@
                     <input type="text" style="display:none;" value="{{ stock.symbol }}" name="stock_symbol">
                     <input type="text" style="display:none;" value="IB" name="TRAIT">
                     <input type="text" style="display:None;" name="stock_symbol">
-                    Select Price Order Type: <select name="LimitCheck" class="LimitCheck" onchange="switchCL(event,{{ stock.latestPrice }})">
+                    Select Price Order Type: <select name="LimitCheck" class="LimitCheck" onchange="switchCL(event, {{ stock.latestPrice }})">
                                                 <option value="current">Current Price</option>
                                                 <option value="limit">Limit price</option>
                                             </select><br><br>
