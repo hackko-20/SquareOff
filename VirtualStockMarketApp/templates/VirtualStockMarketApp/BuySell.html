@@ -10,37 +10,41 @@
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+        <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+        <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
+        <script src="//cdn.amcharts.com/lib/4/maps.js"></script>
+        <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
         <title>Place order</title>
     </head>
     <body>
-            <div>
-
-                    <!-- Top Navigation Menu -->
-                    <div class="topnav">
-                      <a href="place_order" class="active">BuySell</a>
-                      <div id="myLinks">
-                        <a href="portfolio">Portfolio</a>
-                        <a href="explore">Explore</a>
-                        <a href="home">Home</a>
-                        <a href="logout">Log Out</a>
-                      </div>
-                      <a href="javascript:void(0);" class="icon" onclick="myFunction()">
-                        <i class="fa fa-bars"></i>
-                      </a>
-                    </div>
-                    
-                    <!-- End smartphone / tablet look -->
-                    </div>
-                    <script>                                    
-                        function myFunction() {
-                            var x = document.getElementById("myLinks");
-                            if (x.style.display === "block") {
-                              x.style.display = "none";
-                            } else {
-                              x.style.display = "block";
-                            }
-                          }
-                    </script>
+        <div>
+            <!-- Top Navigation Menu -->
+            <div class="topnav">
+                <a href="place_order" class="active">Place Orders</a>
+                <div id="myLinks">
+                <a href="portfolio">Portfolio</a>
+                <a href="explore">Explore</a>
+                <a href="home">Home</a>
+                <a href="logout">Log Out</a>
+                </div>
+                <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+                <i class="fa fa-bars"></i>
+                </a>
+            </div>
+            
+            <!-- End smartphone / tablet look -->
+            </div>
+            <script>                                    
+                function myFunction() {
+                    var x = document.getElementById("myLinks");
+                    if (x.style.display === "block") {
+                        x.style.display = "none";
+                    } else {
+                        x.style.display = "block";
+                    }
+                }
+            </script>
+        </div>
         <div class="mainContent" style="background-color: #ffffff;">
             <!-- Stock Details -->
             <div class="stockDetails">
@@ -61,10 +65,29 @@
                     </div>
                 </div><br><br>
                 
-                <div class="graphs">
-                    <p>Stock Chart Here! Forms Below.</p>
+                <div id="graphs">
+                    <script type="text/javascript">
+                        var symbol = "{{ stock.symbol }}";
+                    </script>
+                    <div id="switchGraphs">
+                        <a class="btn" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                           <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQhi1ORRmoXg58Z3Wd4Anh7Jjg95yTrG_BchA&usqp=CAU" class="ToggleIcon">
+                          </a>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <button class="dropdown-item" onclick="openGraph(event, 'Candlestick')">Candlestick</button>
+                            <button class="dropdown-item" onclick="openGraph(event, 'Line')">Line</button>
+                            <button class="dropdown-item" onclick="openGraph(event, 'Bar')">Bar</button>
+                        </div>
+                    </div>
+                    <div id="Candlestick" class="graph" style="display:block;"></div>
+                    <div id="Line" class="graph"></div>
+                    <div id="Bar" class="graph"></div>
+                    <!-- <p>Stock Chart Here! Forms Below.</p> -->
                 </div>
-            </div><br>
+            </div>
+            
+            <br>
+
             <!-- buySell form -->
             <div class="tab">
                 <button class="tablinks" onclick="openForm(event, 'Intraday_Buy')">Intraday Buy</button>
@@ -149,5 +172,6 @@
         {% endif %}
         <!-- link to JS file-->
         <script src="{% static 'JS/searchBar.js' %}"></script>
+        <script src="{% static 'JS/graphs.js' %}"></script>
     </body>
 </html>
