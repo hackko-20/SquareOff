@@ -206,6 +206,7 @@ def place_order(request):
         price = price,
         timestamp = timezone.now()
     )
+    new_order.save()
 
     # getting the user's current data
     user = models.User.objects.get(id=request.session["user_id"])
@@ -239,7 +240,7 @@ def place_order(request):
 
                 # add transaction to history
                 new_txn = models.TransactionHistory(
-                    userID = models.User.objects.get(id = request.session['user_id']),
+                    userID = user,
                     stock_symbol = stock_symbol,
                     bought = True,
                     quantity = quantity,
@@ -247,14 +248,13 @@ def place_order(request):
                 )
                 new_txn.save()
 
-                # if no future need of record
-                if stop_loss == 0 and target_price == 0:
-                    return HttpResponseRedirect(reverse(portfolio))
-                
-                # if the record may be needed in the future
-                else:
-                    new_order.save()
-                    return HttpResponseRedirect(reverse(portfolio))
+                if stop_loss != 0 and target_price != 0:
+                    """
+                    Implementation to be figured out
+                    """
+                    pass
+
+                return HttpResponseRedirect(reverse(portfolio))
 
             # if user cannot afford the purchase
             return render(request, 'VirtualStockMarketApp/BuySell.html', {
@@ -275,22 +275,24 @@ def place_order(request):
             
             # number of shares user owns for the stock
             if not user_stocks_owned.get(stock_symbol=stock_symbol):
-                stock_quantity = 0
+                share_quantity = 0
             else:
-                stock_quantity = user_stocks_owned.get(stock_symbol=stock_symbol).quantity
+                share_quantity = user_stocks_owned.get(stock_symbol=stock_symbol).quantity
 
             # if user has enough shares to sell
-            if stock_quantity >= quantity:
+            if share_quantity >= quantity:
 
                 # modify user's balance
                 user.balance += (quantity * price)
 
                 # modify user's stocks owned
-                user_stocks_owned.get(stock_symbol=stock_symbol).quantity -= stock_quantity
-
+                models.StocksOwned.objects.filter(userID=user, stock_symbol=stock_symbol).update(
+                    quantity = share_quantity - quantity
+                )
+                
                 # add transaction to history
                 new_txn = models.TransactionHistory(
-                    userID = user.id,
+                    userID = user,
                     stock_symbol = stock_symbol,
                     bought = False,
                     quantity = quantity,
@@ -298,14 +300,13 @@ def place_order(request):
                 )
                 new_txn.save()
 
-                # if no future need of record
-                if stop_loss == 0 and target_price == 0:
-                    return HttpResponseRedirect(reverse(portfolio))
-                
-                # if the record may be needed in the future
-                else:
-                    new_order.save()
-                    return HttpResponseRedirect(reverse(portfolio))
+                if stop_loss != 0 and target_price != 0:
+                    """
+                    Implementation to be figured out
+                    """
+                    pass
+
+                return HttpResponseRedirect(reverse(portfolio))
 
             # if user does not have enough shares to sell
             return render(request, "VirtualStockMarketApp/BuySell.html", {

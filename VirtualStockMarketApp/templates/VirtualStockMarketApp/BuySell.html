@@ -96,77 +96,178 @@
                 <button class="tablinks" onclick="openForm(event, 'Cash_Sell')">Cash Sell</button>
             </div>
             <div class="form">
-                <form id="Intraday_Buy" class="formElements"  action="place_order" method="POST">
-                    {% csrf_token %}
-                    <input type="text" style="display:none;" value="{{ stock.symbol }}" name="stock_symbol">
-                    <input type="text" style="display:none;" value="IB" name="TRAIT">
-                    <input type="text" style="display:None;" name="stock_symbol">
-                    Select Price Order Type: <select name="LimitCheck" class="LimitCheck" onchange="switchCL(event, {{ stock.latestPrice }})">
-                                                <option value="current">Current Price</option>
-                                                <option value="limit">Limit price</option>
-                                            </select><br><br>
-                    Price: <input type="number" name="price" class="price" placeholder="{{ stock.latestPrice }}"  value="{{ stock.latestPrice }}" readonly step="0.01"><br><br>
-                    Quantity: <input type="number" name="quantity" placeholder=""><br><br>
-                    Target Price: <input type="number" name="TargetPrice" placeholder="" step="0.01">
-                    Stop Loss: <input type="number" name="StopLoss" placeholder="" step="0.01"><br><br>
-                    Order type: <select name="OrderType" class="OrderType"><br><br>
-                                    <option value="GTC">Good Till Day</option>
+                <div class="container">
+
+                    <!--Intraday buy-->
+                    <form id="Intraday_Buy" class="formElements" action="place_order" method="POST">
+                        {% csrf_token %}
+                        <input type="text" style="display:none;" value="{{ stock.symbol }}" name="stock_symbol">
+                        <input type="text" style="display:none;" value="IB" name="TRAIT">
+                        <input type="text" style="display:None;" name="stock_symbol">
+                        <ul class="wrapper">
+                            <li class="form-row">
+                                <label for="LimitCheck">Select Price Order Type</label>
+                                <select name="LimitCheck" class="LimitCheck" onchange="switchCL(event, {{ stock.latestPrice }})">
+                                    <option value="current">Current Price</option>
+                                    <option value="limit">Limit price</option>
+                                </select>
+                            </li>
+                            <li class="form-row">
+                                <label for="price">Price</label>
+                                <input type="number" name="price" class="price" placeholder="{{ stock.latestPrice }}"  value="{{ stock.latestPrice }}" readonly step="0.01"><br><br>
+                            </li>
+                            <li class="form-row">
+                                <label for="quantity">Quantity</label>
+                                <input type="number" name="quantity" placeholder=""><br><br>
+                            </li>
+                            <li class="form-row">
+                                <label for="TargetPrice">Target Price</label>
+                                <input type="number" name="TargetPrice" placeholder="" step="0.01">
+                            </li>
+                            <li class="form-row">
+                                <label for="StopLoss">Stop Loss</label>
+                                <input type="number" name="StopLoss" placeholder="" step="0.01"><br><br>
+                            </li>
+                            <li class="form-row">
+                                <label for="OrderType">Order Type</label>
+                                <select name="OrderType" class="OrderType"><br><br>
+                                    <option value="GTD">Good Till Day</option>
                                 </select><br><br>
-                    <button onclick="" type="submit">Place Order</button>
-                </form> 
-                <form id="Intraday_Sell" class="formElements"  action="place_order" method="POST">
-                    {% csrf_token %}
-                    <input type="text" style="display:none;" value="IS" name="TRAIT">
-                    <input type="text" style="display:none;" value="{{ stock.symbol }}" name="stock_symbol">
-                    Select Price Order Type: <select name="LimitCheck" class="LimitCheck" onchange="switchCL(event,{{ stock.latestPrice }})">
-                                                <option value="current">Current Price</option>
-                                                <option value="limit">Limit price</option>
-                                             </select><br><br>
-                    Price: <input type="number" name="price" class="price" placeholder="{{ stock.latestPrice }}"  value="{{ stock.latestPrice }}" readonly step="0.01"><br><br>
-                    Quantity: <input type="number" name="quantity" placeholder=""><br><br>
-                    Target Price: <input type="number" name="TargetPrice" placeholder="" step="0.01">
-                    Stop Loss: <input type="number" name="StopLoss" placeholder="" step="0.01"><br><br>
-                    Order type: <select name="OrderType" class="OrderType"><br><br>
-                                    <option value="GTC">Good Till Day</option>
+                            </li>
+                            <li class="form-row">
+                                <button class="btn btn-dark" onclick="" type="submit">Place Order</button>
+                            </li>
+                        </ul>
+                    </form>
+                    
+                    <!--Intraday Sell-->
+                    <form id="Intraday_Sell" class="formElements" action="place_order" method="POST">
+                        {% csrf_token %}
+                        <input type="text" style="display:none;" value="{{ stock.symbol }}" name="stock_symbol">
+                        <input type="text" style="display:none;" value="IS" name="TRAIT">
+                        <input type="text" style="display:None;" name="stock_symbol">
+                        <ul class="wrapper">
+                            <li class="form-row">
+                                <label for="LimitCheck">Select Price Order Type</label>
+                                <select name="LimitCheck" class="LimitCheck" onchange="switchCL(event, {{ stock.latestPrice }})">
+                                    <option value="current">Current Price</option>
+                                    <option value="limit">Limit price</option>
+                                </select>
+                            </li>
+                            <li class="form-row">
+                                <label for="price">Price</label>
+                                <input type="number" name="price" class="price" placeholder="{{ stock.latestPrice }}"  value="{{ stock.latestPrice }}" readonly step="0.01"><br><br>
+                            </li>
+                            <li class="form-row">
+                                <label for="quantity">Quantity</label>
+                                <input type="number" name="quantity" placeholder=""><br><br>
+                            </li>
+                            <li class="form-row">
+                                <label for="TargetPrice">Target Price</label>
+                                <input type="number" name="TargetPrice" placeholder="" step="0.01">
+                            </li>
+                            <li class="form-row">
+                                <label for="StopLoss">Stop Loss</label>
+                                <input type="number" name="StopLoss" placeholder="" step="0.01"><br><br>
+                            </li>
+                            <li class="form-row">
+                                <label for="OrderType">Order Type</label>
+                                <select name="OrderType" class="OrderType"><br><br>
+                                    <option value="GTD">Good Till Day</option>
                                 </select><br><br>
-                    <button onclick="" type="submit">Place Order</button>
-                </form>
-                <form id="Cash_Buy" action="" class="formElements"  action="place_order" method="POST">
-                    {% csrf_token %}
-                    <input type="text" style="display:none;" value="CB" name="TRAIT">
-                    <input type="text" style="display:none;" value="{{ stock.symbol }}" name="stock_symbol">
-                    Select Price Order Type: <select name="LimitCheck" class="LimitCheck" onchange="switchCL(event,{{ stock.latestPrice }})">
-                        <option value="current">Current Price</option>
-                        <option value="limit">Limit price</option>
-                    </select><br><br>
-                    Price: <input type="number" name="price" class="price" placeholder="{{ stock.latestPrice }}" value="{{ stock.latestPrice }}" readonly step="0.01"><br><br>
-                    Quantity: <input type="number" name="quantity" placeholder=""><br><br>
-                    Target Price: <input type="number" name="TargetPrice" placeholder="" step="0.01">
-                    Stop Loss: <input type="number" name="StopLoss" placeholder="" step="0.01"><br><br>
-                    Order type: <select name="OrderType" class="OrderType"><br><br>
-                                    <option value="GTC">Good Till Day</option>
-                                    <option value="GTD">Good Till Cancelled</option>
+                            </li>
+                            <li class="form-row">
+                                <button class="btn btn-dark" onclick="" type="submit">Place Order</button>
+                            </li>
+                        </ul>
+                    </form>
+
+                    <!--Cash Buy-->
+                    <form id="Cash_Buy" class="formElements" action="place_order" method="POST">
+                        {% csrf_token %}
+                        <input type="text" style="display:none;" value="{{ stock.symbol }}" name="stock_symbol">
+                        <input type="text" style="display:none;" value="CB" name="TRAIT">
+                        <input type="text" style="display:None;" name="stock_symbol">
+                        <ul class="wrapper">
+                            <li class="form-row">
+                                <label for="LimitCheck">Select Price Order Type</label>
+                                <select name="LimitCheck" class="LimitCheck" onchange="switchCL(event, {{ stock.latestPrice }})">
+                                    <option value="current">Current Price</option>
+                                    <option value="limit">Limit price</option>
+                                </select>
+                            </li>
+                            <li class="form-row">
+                                <label for="price">Price</label>
+                                <input type="number" name="price" class="price" placeholder="{{ stock.latestPrice }}"  value="{{ stock.latestPrice }}" readonly step="0.01"><br><br>
+                            </li>
+                            <li class="form-row">
+                                <label for="quantity">Quantity</label>
+                                <input type="number" name="quantity" placeholder=""><br><br>
+                            </li>
+                            <li class="form-row">
+                                <label for="TargetPrice">Target Price</label>
+                                <input type="number" name="TargetPrice" placeholder="" step="0.01">
+                            </li>
+                            <li class="form-row">
+                                <label for="StopLoss">Stop Loss</label>
+                                <input type="number" name="StopLoss" placeholder="" step="0.01"><br><br>
+                            </li>
+                            <li class="form-row">
+                                <label for="OrderType">Order Type</label>
+                                <select name="OrderType" class="OrderType"><br><br>
+                                    <option value="GTD">Good Till Day</option>
+                                    <option value="GTC">Good Till Cancelled</option>
                                 </select><br><br>
-                    <button onclick="" type="submit">Place Order</button>
-                </form>
-                <form id="Cash_Sell" class="formElements"  action="place_order" method="POST">
-                    {% csrf_token %}
-                    <input type="text" style="display:none;" value="CS" name="TRAIT">
-                    <input type="text" style="display:none;" value="{{ stock.symbol }}" name="stock_symbol">
-                    Select Price Order Type: <select name="LimitCheck" class="LimitCheck" onchange="switchCL(event,{{ stock.latestPrice }})">
-                        <option value="current">Current Price</option>
-                        <option value="limit">Limit price</option>
-                    </select><br><br>
-                    Price: <input type="number" name="price" class="price" placeholder="{{ stock.latestPrice }}"  value="{{ stock.latestPrice }}" readonly step="0.01"><br><br>
-                    Quantity: <input type="number" name="quantity" placeholder=""><br><br>
-                    Target Price: <input type="number" name="TargetPrice" placeholder="" step="0.01">
-                    Stop Loss: <input type="number" name="StopLoss" placeholder="" step="0.01"><br><br>
-                    Order type: <select name="OrderType" class="OrderType"><br><br>
-                                    <option value="GTC">Good Till Day</option>
-                                    <option value="GTD">Good Till Cancelled</option>
+                            </li>
+                            <li class="form-row">
+                                <button class="btn btn-dark" onclick="" type="submit">Place Order</button>
+                            </li>
+                        </ul>
+                    </form>
+
+                    <!--Cash Sell-->
+                    <form id="Cash_Sell" class="formElements" action="place_order" method="POST">
+                        {% csrf_token %}
+                        <input type="text" style="display:none;" value="{{ stock.symbol }}" name="stock_symbol">
+                        <input type="text" style="display:none;" value="CS" name="TRAIT">
+                        <input type="text" style="display:None;" name="stock_symbol">
+                        <ul class="wrapper">
+                            <li class="form-row">
+                                <label for="LimitCheck">Select Price Order Type</label>
+                                <select name="LimitCheck" class="LimitCheck" onchange="switchCL(event, {{ stock.latestPrice }})">
+                                    <option value="current">Current Price</option>
+                                    <option value="limit">Limit price</option>
+                                </select>
+                            </li>
+                            <li class="form-row">
+                                <label for="price">Price</label>
+                                <input type="number" name="price" class="price" placeholder="{{ stock.latestPrice }}"  value="{{ stock.latestPrice }}" readonly step="0.01"><br><br>
+                            </li>
+                            <li class="form-row">
+                                <label for="quantity">Quantity</label>
+                                <input type="number" name="quantity" placeholder=""><br><br>
+                            </li>
+                            <li class="form-row">
+                                <label for="TargetPrice">Target Price</label>
+                                <input type="number" name="TargetPrice" placeholder="" step="0.01">
+                            </li>
+                            <li class="form-row">
+                                <label for="StopLoss">Stop Loss</label>
+                                <input type="number" name="StopLoss" placeholder="" step="0.01"><br><br>
+                            </li>
+                            <li class="form-row">
+                                <label for="OrderType">Order Type</label>
+                                <select name="OrderType" class="OrderType"><br><br>
+                                    <option value="GTD">Good Till Day</option>
+                                    <option value="GTC">Good Till Cancelled</option>
                                 </select><br><br>
-                    <button onclick="" type="submit">Place Order</button>
-                </form>
+                            </li>
+                            <li class="form-row">
+                                <button class="btn btn-dark" onclick="" type="submit">Place Order</button>
+                            </li>
+                        </ul>
+                    </form>
+                </div>
             </div>
         </div>
         {% endif %}
