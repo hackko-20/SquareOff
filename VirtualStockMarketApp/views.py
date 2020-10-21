@@ -133,7 +133,10 @@ def portfolio(request):
         quantity = user_stocks_owned.get(stock_symbol = row.stock_symbol)
         url = "https://cloud.iexapis.com/" + "stable/stock/" + row.stock_symbol + "/quote?token=" + api_key + "&filter=latestPrice"
         response = requests.get(url)
-        present_price = response.json()
+        if response.status_code == 200:
+            present_price = response.json()
+        else:
+            print(f"Status code: {response.status_code}")
         net_worth = float(net_worth) + (quantity.quantity * present_price["latestPrice"])
         num_stocks_owned += quantity.quantity
 
@@ -228,7 +231,7 @@ def place_order(request):
                 # modify user's stocks owned
                 if user_stocks_owned.filter(stock_symbol=stock_symbol):
                     models.StocksOwned.objects.filter(stock_symbol=stock_symbol, userID=user).update(
-                        quantity = user_stocks_owned.get(stock_symbol=stock_symbol).quantity + 1
+                        quantity = user_stocks_owned.get(stock_symbol=stock_symbol).quantity + quantity
                     )
                 else:
                     new_stock_owned = models.StocksOwned (
@@ -283,7 +286,7 @@ def place_order(request):
             if share_quantity >= quantity:
 
                 # modify user's balance
-                user.balance += (quantity * price)
+                user.balance = float(user.balance) + (float(quantity) * float(price))
 
                 # modify user's stocks owned
                 models.StocksOwned.objects.filter(userID=user, stock_symbol=stock_symbol).update(
