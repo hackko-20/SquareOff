@@ -111,11 +111,34 @@ body {
     background-color: #ccc;
 }
 
+/* Form styles */
+
+.wrapper {
+    background-color: whitesmoke;
+    list-style-type: none;
+    border-radius: 3px;
+    padding: 45px;
+    width: 60%;
+    margin: auto;
+}
+
+.form-row {
+    display: flex;
+    justify-content: flex-end;
+    padding: .5em;
+}
+
+.form-row > label {
+    flex: 1;
+}
+
+.form-row > input {
+    flex: 2;
+}
+
 .formElements {
     display: none;
-    padding: 20px;
     background-color: #ffffff;
-    margin: 10px;
     color: #4169E1;
     font-family: 'Montserrat';
     font-weight: 600;
@@ -123,11 +146,9 @@ body {
 }
 
 input[type=number] {
-    margin-left: 30px;
-    margin-right: 20px;
     background-color: #d0d1d0;
-    padding: 5px;
     border-radius: 2px;
+    padding: 15px;
 }
 
 .formElements > button {
@@ -136,25 +157,13 @@ input[type=number] {
     font-weight: 800;
     font-size: 15px;
     color: #ffffff;
-    padding: 8px;
     border-radius: 2px;;
 }
-.LimitCheck {
-    margin-left:30px;
-    padding: 5px;
+
+.LimitCheck, .OrderType {
     border-radius: 2px;
     background-color: #d0d1d0;
-}
-
-.OrderType {
-    margin-left:30px;
-    padding: 5px;
-    border-radius: 2px;
-    background-color: #d0d1d0;
-}
-
-.limit_current {
-    display: inline;
+    padding: 15px;
 }
 
 /* Stock details div */

@@ -7,7 +7,6 @@ from iexfinance.stocks import get_historical_data
 from django.http import HttpResponseRedirect, request, HttpResponse
 from django.utils import timezone
 import os
-import json
 import requests
 
 # api key 
@@ -131,11 +130,12 @@ def portfolio(request):
     num_stocks_owned = 0.
     for row in user_stocks_owned:
         quantity = user_stocks_owned.get(stock_symbol = row.stock_symbol)
-        url = "https://cloud.iexapis.com/" + "stable/stock/" + row.stock_symbol + "/quote?token=" + api_key + "&filter=latestPrice"
-        response = requests.get(url)
-        present_price = response.json()
-        net_worth = float(net_worth) + (quantity.quantity * present_price["latestPrice"])
-        num_stocks_owned += quantity.quantity
+        url = "https://cloud.iexapis.com/stable/stock/" + row.stock_symbol + "/quote?token=" + api_key + "&filter=latestPrice"
+        if requests.get(url).status_code == 200:
+            present_price = requests.get(url).json()
+        else:
+            presentPrice = {"latestPrice": 0}
+        net_worth = float(net_worth) + (float(quantity.quantity) * float(present_price["latestPrice"]))
 
     #  calculation of profit/loss
     total_profit = 0
@@ -151,11 +151,11 @@ def portfolio(request):
     
     return render(request, 'VirtualStockMarketApp/Portfolio.html', {
         "user_favourites": user_favourites, 
-        "user_transactHistory": user_txn_history, 
+        "user_transact_history": user_txn_history, 
         "net_worth": net_worth, 
         "profit": total_profit, 
         "user": user,
-        "user_stocks_owned": num_stocks_owned
+        "user_stocks_owned": user_stocks_owned
     })
 
 def place_order(request):
@@ -206,6 +206,7 @@ def place_order(request):
         price = price,
         timestamp = timezone.now()
     )
+    new_order.save()
 
     # getting the user's current data
     user = models.User.objects.get(id=request.session["user_id"])
@@ -225,15 +226,21 @@ def place_order(request):
                 user.balance = float(user.balance) - (float(quantity) * float(price))
 
                 # modify user's stocks owned
-                if user_stocks_owned.get(stock_symbol=stock_symbol):
-                    user_stocks_owned.get(stock_symbol=stock_symbol).quantity += quantity
+                if user_stocks_owned.filter(stock_symbol=stock_symbol):
+                    models.StocksOwned.objects.filter(stock_symbol=stock_symbol, userID=user).update(
+                        quantity = user_stocks_owned.get(stock_symbol=stock_symbol).quantity + quantity
+                    )
                 else:
-                    new_stock = models.StocksOwned(userID=user.id, stock_symbol=stock_symbol)
-                    new_stock.save()
+                    new_stock_owned = models.StocksOwned (
+                        userID = user,
+                        stock_symbol = stock_symbol,
+                        quantity = 1
+                    )
+                    new_stock_owned.save()
 
                 # add transaction to history
                 new_txn = models.TransactionHistory(
-                    userID = models.User.objects.get(id = request.session['user_id']),
+                    userID = user,
                     stock_symbol = stock_symbol,
                     bought = True,
                     quantity = quantity,
@@ -241,14 +248,13 @@ def place_order(request):
                 )
                 new_txn.save()
 
-                # if no future need of record
-                if stop_loss == 0 and target_price == 0:
-                    return HttpResponseRedirect(reverse(portfolio))
-                
-                # if the record may be needed in the future
-                else:
-                    new_order.save()
-                    return HttpResponseRedirect(reverse(portfolio))
+                if stop_loss != 0 and target_price != 0:
+                    """
+                    Implementation to be figured out
+                    """
+                    pass
+
+                return HttpResponseRedirect(reverse(portfolio))
 
             # if user cannot afford the purchase
             return render(request, 'VirtualStockMarketApp/BuySell.html', {
@@ -269,22 +275,24 @@ def place_order(request):
             
             # number of shares user owns for the stock
             if not user_stocks_owned.get(stock_symbol=stock_symbol):
-                stock_quantity = 0
+                share_quantity = 0
             else:
-                stock_quantity = user_stocks_owned.get(stock_symbol=stock_symbol).quantity
+                share_quantity = user_stocks_owned.get(stock_symbol=stock_symbol).quantity
 
             # if user has enough shares to sell
-            if stock_quantity >= quantity:
+            if share_quantity >= quantity:
 
                 # modify user's balance
-                user.balance += (quantity * price)
+                user.balance = float(user.balance) + (float(quantity) * float(price))
 
                 # modify user's stocks owned
-                user_stocks_owned.get(stock_symbol=stock_symbol).quantity -= stock_quantity
-
+                models.StocksOwned.objects.filter(userID=user, stock_symbol=stock_symbol).update(
+                    quantity = share_quantity - quantity
+                )
+                
                 # add transaction to history
                 new_txn = models.TransactionHistory(
-                    userID = user.id,
+                    userID = user,
                     stock_symbol = stock_symbol,
                     bought = False,
                     quantity = quantity,
@@ -292,14 +300,13 @@ def place_order(request):
                 )
                 new_txn.save()
 
-                # if no future need of record
-                if stop_loss == 0 and target_price == 0:
-                    return HttpResponseRedirect(reverse(portfolio))
-                
-                # if the record may be needed in the future
-                else:
-                    new_order.save()
-                    return HttpResponseRedirect(reverse(portfolio))
+                if stop_loss != 0 and target_price != 0:
+                    """
+                    Implementation to be figured out
+                    """
+                    pass
+
+                return HttpResponseRedirect(reverse(portfolio))
 
             # if user does not have enough shares to sell
             return render(request, "VirtualStockMarketApp/BuySell.html", {
@@ -313,7 +320,6 @@ def place_order(request):
             Implementation yet to be figured out
             """
             pass
-
 
 def explore(request):
     # if user is not logged in
