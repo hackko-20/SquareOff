@@ -15,10 +15,16 @@
             <div class="inner">
                 <h1>SQUARE OFF</h1>
                 <h2 id="heading">Sign in!</h2>
+                {% if message %}
+                <br>
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <strong>{{ message }}</strong>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true" style="float: right;">&times;</span>
+                        </button>
+                    </div>   
+                {% endif %}
                 <form action="login" method="POST">
-                    {% if message %}
-                    <div id="error">{{ message }}</div>
-                    {% endif %}   
                     {% csrf_token %}
                     <input type="text" class="form-control" name="username" placeholder="Username">
                     <input name="password" class="form-control" type="password" placeholder="Password">

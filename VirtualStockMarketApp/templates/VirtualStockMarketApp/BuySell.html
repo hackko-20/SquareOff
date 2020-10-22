@@ -23,7 +23,7 @@
                 <a href="place_order" class="active">Place Orders</a>
                 <div id="myLinks">
                 <a href="portfolio">Portfolio</a>
-                <a href="explore">Explore</a>
+                <a href="home">Explore Stocks</a>
                 <a href="home">Home</a>
                 <a href="logout">Log Out</a>
                 </div>
@@ -87,7 +87,7 @@
             </div>
             
             <br>
-
+            {% if stock.isUSMarketOpen == True %}
             <!-- buySell form -->
             <div class="tab">
                 <button class="tablinks" onclick="openForm(event, 'Intraday_Buy')">Intraday Buy</button>
@@ -168,6 +168,11 @@
                     <button onclick="" type="submit">Place Order</button>
                 </form>
             </div>
+            {% else %}
+            <div>
+                <center><h3 style="color: #a8a7a798;margin:40px;">The markets are not open just yet!</h3></center>
+            </div>
+            {% endif %}
         </div>
         {% endif %}
         <!-- link to JS file-->

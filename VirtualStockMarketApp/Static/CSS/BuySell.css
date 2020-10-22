@@ -50,7 +50,7 @@ body {
     color: white;
   }
 
-
+/*----------*/
 .StockLink {
     padding: 15px;
     background-color: #ffffff;
@@ -76,13 +76,14 @@ body {
     padding: 8px;
     font-family: 'Montserrat';
 }
+
 .searchBar > input {
     padding: 8px;
     border-radius: 12px; 
     border-color: black;
     margin-right: 10px;
 } 
-
+/* ------ */
 .tab {
     overflow: hidden;
     border: 0px;

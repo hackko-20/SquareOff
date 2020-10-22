@@ -11,15 +11,27 @@ function search_api() {
         .then(response => response.json())
         .then(data => {
                 var element = document.createElement("button");
+                var prevLinks = document.getElementsByClassName("StockLink");
+                for(var i=0;i<prevLinks.length;i++)
+                {
+                    prevLinks[i].remove();
+                }
                 element.setAttribute("type", "submit");
                 element.setAttribute("class", "StockLink");
                 document.getElementById("ss").value = data.symbol;
                 console.log(document.getElementById("ss").value);
                 element.innerHTML= data.companyName;
                 document.getElementById("searchOption").appendChild(element);
+                document.getElementById("watermark").style.display = "none";
         })
         .catch(error =>{
             alert("symbol not found");
+            var prevLinks = document.getElementsByClassName("StockLink");
+            for(var i=0;i<prevLinks.length;i++)
+            {
+                prevLinks[i].remove();
+            }
+            document.getElementById("watermark").style.display = "block";
         });  
 }
 
@@ -56,3 +68,12 @@ function switchCL(e, price) {
         }       
     }
 }
+
+function myFunction() {
+    var x = document.getElementById("myLinks");
+    if (x.style.display === "block") {
+      x.style.display = "none";
+    } else {
+      x.style.display = "block";
+    }
+  }
