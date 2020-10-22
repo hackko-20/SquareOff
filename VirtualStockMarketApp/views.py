@@ -7,7 +7,6 @@ from iexfinance.stocks import get_historical_data
 from django.http import HttpResponseRedirect, request, HttpResponse
 from django.utils import timezone
 import os
-import json
 import requests
 
 # api key 
@@ -131,14 +130,12 @@ def portfolio(request):
     num_stocks_owned = 0.
     for row in user_stocks_owned:
         quantity = user_stocks_owned.get(stock_symbol = row.stock_symbol)
-        url = "https://cloud.iexapis.com/" + "stable/stock/" + row.stock_symbol + "/quote?token=" + api_key + "&filter=latestPrice"
-        response = requests.get(url)
-        if response.status_code == 200:
-            present_price = response.json()
+        url = "https://cloud.iexapis.com/stable/stock/" + row.stock_symbol + "/quote?token=" + api_key + "&filter=latestPrice"
+        if requests.get(url).status_code == 200:
+            present_price = requests.get(url).json()
         else:
-            print(f"Status code: {response.status_code}")
-        net_worth = float(net_worth) + (quantity.quantity * present_price["latestPrice"])
-        num_stocks_owned += quantity.quantity
+            presentPrice = {"latestPrice": 0}
+        net_worth = float(net_worth) + (float(quantity.quantity) * float(present_price["latestPrice"]))
 
     #  calculation of profit/loss
     total_profit = 0
