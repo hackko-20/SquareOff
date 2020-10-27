@@ -9,5 +9,6 @@ urlpatterns = [
     path('explore', views.explore),
     path('place_order', views.place_order),
     path('portfolio', views.portfolio),
-    path('home', views.home)
+    path('home', views.home),
+    path('celery',views.test_celery)
 ]

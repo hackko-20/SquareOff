@@ -6,8 +6,7 @@
     margin: 0;
     padding: 0px;
     border: 0px;
-    box-sizing: border-box; 
-    
+    box-sizing: border-box;     
 }
 
 body {
@@ -21,29 +20,29 @@ body {
     position: relative;
   }
   
-  .topnav #myLinks {
+.topnav #myLinks {
     display: none;
-  }
+}
   
-  .topnav a {
+.topnav a {
     color: white;
     padding: 14px 16px;
     text-decoration: none;
     font-size: 17px;
     display: block;
-  }
+}
   
-  .topnav a.icon {
+.topnav a.icon {
     display: block;
     position: absolute;
     right: 0;
     top: 0;
-  }
+}
   
-  .topnav a:hover {
+.topnav a:hover {
     background-color: #ddd;
     color: black;
-  }
+}
   
   .active {
     background-color: #4169E1;
@@ -112,6 +111,10 @@ body {
 }
 
 /* Form styles */
+.container {
+    height:80vh;
+    width: 100%;
+}
 
 .wrapper {
     background-color: whitesmoke;

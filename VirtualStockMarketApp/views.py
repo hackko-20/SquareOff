@@ -8,6 +8,7 @@ from django.http import HttpResponseRedirect, request, HttpResponse
 from django.utils import timezone
 import os
 import requests
+from . import tasks
 
 # api key 
 if not os.getenv('IEX_TOKEN'):
@@ -15,6 +16,13 @@ if not os.getenv('IEX_TOKEN'):
 api_key = os.getenv('IEX_TOKEN')
 
 # Create your views here.
+
+# just a test
+def test_celery(request):
+    tasks.my_first_task.delay(100)
+    return HttpResponse("good to go!")
+
+
 def register_view(request):
     """
     The register_view is called by default when the user visits the website or visits '/register'. The view 
@@ -187,13 +195,13 @@ def place_order(request):
     price = float(request.POST["price"])
     quantity = int(request.POST["quantity"])
     if limit_price is False:
-        GTC = None
+        GTC = True
     elif request.POST["OrderType"] == "GTC":
         GTC = True
     else: 
         GTC = False
-    stop_loss = request.POST["StopLoss"]
-    target_price = request.POST["TargetPrice"]
+    stop_loss = float(request.POST["StopLoss"])
+    target_price = float(request.POST["TargetPrice"])
 
     # creating object
     new_order = models.OrderHistory (
@@ -204,15 +212,24 @@ def place_order(request):
         GTC = GTC,
         limit_price = limit_price,
         price = price,
-        timestamp = timezone.now()
+        timestamp = timezone.now(),
+        stop_loss = stop_loss,
+        target_price = target_price
     )
-    new_order.save()
-
+    
     # getting the user's current data
     user = models.User.objects.get(id=request.session["user_id"])
-    user_stocks_owned = models.StocksOwned.objects.filter(userID=request.session["user_id"])
     current_balance = user.balance
-
+    # check if the user already owns some stocks
+    try:
+        user_stocks_owned = models.StocksOwned.objects.filter(userID=request.session["user_id"])
+    except:
+        user_stocks_owned = models.StockOwned(
+            userID = user,
+            stock_symbol = stock_symbol,
+            quantity = 0
+        )
+        user_stocks_owned.save()
     # if user opts for Cash Buy
     if trait == 'CB':
 
@@ -224,6 +241,7 @@ def place_order(request):
 
                 # modify user's balance
                 user.balance = float(user.balance) - (float(quantity) * float(price))
+                user.save()
 
                 # modify user's stocks owned
                 if user_stocks_owned.filter(stock_symbol=stock_symbol):
@@ -234,7 +252,7 @@ def place_order(request):
                     new_stock_owned = models.StocksOwned (
                         userID = user,
                         stock_symbol = stock_symbol,
-                        quantity = 1
+                        quantity = quantity
                     )
                     new_stock_owned.save()
 
@@ -244,28 +262,35 @@ def place_order(request):
                     stock_symbol = stock_symbol,
                     bought = True,
                     quantity = quantity,
-                    share_price = price
+                    share_price = price,
+                    trait = trait
                 )
                 new_txn.save()
-
-                if stop_loss != 0 and target_price != 0:
-                    """
-                    Implementation to be figured out
-                    """
-                    pass
+                new_order.GTC = False
+                if stop_loss != 0 or target_price != 0:
+                    new_order.status_pending = True
+                    new_order.save()
+                
+                else:
+                    new_order.status_pending = False
+                    new_order.save()
 
                 return HttpResponseRedirect(reverse(portfolio))
 
             # if user cannot afford the purchase
+            url = "https://cloud.iexapis.com/" + "stable/stock/" + stock_symbol + "/quote?token=" + api_key
+            response = requests.get(url)
+            stock_details = response.json()
             return render(request, 'VirtualStockMarketApp/BuySell.html', {
-                "stock_symbol": stock_symbol,
+                "stock": stock_details,
                 "message": "Your account balance is too low for the purchase."
             })
         
         # if user opts for Limit Price
         elif limit_price:
-            """ Implementation to be figured out """
-            pass
+            new_order.status_pending = True
+            new_order.save()
+            return HttpResponseRedirect(reverse(portfolio))
 
     # if user opts for Cash Sell
     elif trait == 'CS':
@@ -284,6 +309,7 @@ def place_order(request):
 
                 # modify user's balance
                 user.balance = float(user.balance) + (float(quantity) * float(price))
+                user.save()
 
                 # modify user's stocks owned
                 models.StocksOwned.objects.filter(userID=user, stock_symbol=stock_symbol).update(
@@ -296,37 +322,203 @@ def place_order(request):
                     stock_symbol = stock_symbol,
                     bought = False,
                     quantity = quantity,
-                    share_price = price
+                    share_price = price,
+                    trait = trait
                 )
                 new_txn.save()
-
-                if stop_loss != 0 and target_price != 0:
-                    """
-                    Implementation to be figured out
-                    """
-                    pass
+                new_order.GTC = False
+                if stop_loss != 0 or target_price != 0:
+                    new_order.status_pending = True
+                    new_order.save()
+                
+                else:
+                    new_order.status_pending = False
+                    new_order.save()
 
                 return HttpResponseRedirect(reverse(portfolio))
 
             # if user does not have enough shares to sell
+            url = "https://cloud.iexapis.com/" + "stable/stock/" + stock_symbol + "/quote?token=" + api_key
+            response = requests.get(url)
+            stock_details = response.json()
             return render(request, "VirtualStockMarketApp/BuySell.html", {
-                "stock_symbol": stock_symbol,
+                "stock": stock_details,
                 "message": "You do not hold enough shares to sell."
             })
 
         # if user opts for Limit Price
         elif limit_price:
-            """
-            Implementation yet to be figured out
-            """
-            pass
+            new_order.status_pending = True
+            new_order.save()
+            return HttpResponseRedirect(reverse(portfolio))
+
+    elif trait == 'IB':
+        if not limit_price:
+            pay_amount = quantity * price
+            if pay_amount > user.intraday_balance:
+                return render(request, "VirtualStockMarketApp/BuySell.html", {
+                    "stock_symbol": stock_symbol,
+                    "message": "You have exceeded your intraday transaction limit."
+                })
+            user.intraday_balance = float(user.intraday_balance) - float(pay_amount)
+            user.save()
+            new_txn = models.TransactionHistory(
+                    userID = user,
+                    stock_symbol = stock_symbol,
+                    bought = True,
+                    quantity = quantity,
+                    share_price = price,
+                    trait = trait
+                )
+            new_txn.save()
+            try:
+                user_intraday_stocks = models.IntradayStocksOwned.objects.filter(userID = user.id)
+                if user_intraday_stocks:
+                    try:
+                        user_stock = user_intraday_stocks.get(stock_symbol=stock_symbol)
+                        if user_stock:
+                            temp = user_stock.quantity
+                            models.IntradayStocksOwned.objects.filter(userID = user.id, stock_symbol = stock_symbol).update(
+                                quantity = temp + quantity
+                            )
+                        else:
+                            new_intra_order = models.IntradayStocksOwned(
+                                userID = user,
+                                stock_symbol = stock_symbol,
+                                quantity = quantity
+                            )
+                            new_intra_order.save()
+                    except:
+                        new_intra_order = models.IntradayStocksOwned(
+                                userID = user,
+                                stock_symbol = stock_symbol,
+                                quantity = quantity
+                            )
+                        new_intra_order.save()
+                else:
+                    new_intra_order = models.IntradayStocksOwned(
+                            userID = user,
+                            stock_symbol = stock_symbol,
+                            quantity = quantity
+                        )
+                    new_intra_order.save()
+            except:
+                new_intra_order = models.IntradayStocksOwned(
+                            userID = user,
+                            stock_symbol = stock_symbol,
+                            quantity = quantity
+                        )
+                new_intra_order.save()
+            new_order.GTC = False
+            if stop_loss != 0 or target_price != 0:
+                new_order.status_pending = True
+                new_order.save()
+            else:
+                new_order.status_pending = False
+                new_order.save()
+            return HttpResponseRedirect(reverse(portfolio))
+        else:
+            new_order.status_pending = True
+            new_order.save()
+            return HttpResponseRedirect(reverse(portfolio))
+
+    elif trait == 'IS':
+        if not limit_price:
+            share_quantity = 0
+            user_stock = None
+            try:
+                user_intraday_stocks = models.IntradayStocksOwned.objects.filter(userID = user.id)
+                try:
+                    user_stock = user_intraday_stocks.get(stock_symbol=stock_symbol)
+                    share_quantity = user_stock.quantity
+                except:
+                    if user_stock is None:
+                        share_quantity = 0
+            except:
+                share_quantity = 0
+            if quantity >= share_quantity:
+                share_amount = (quantity - share_quantity) * price
+                if share_amount > user.intraday_balance:
+                    return render(request, "VirtualStockMarketApp/BuySell.html", {
+                        "stock_symbol": stock_symbol,
+                        "message": "You have exceeded your intraday transaction limit."
+                    })
+                if user_stock:
+                    user_stock.quantity = share_quantity - quantity
+                    user_stock.save()
+                else:
+                    new_intra_order = models.IntradayStocksOwned(
+                        userID = user,
+                        stock_symbol = stock_symbol,
+                        quantity = share_quantity - quantity
+                    )
+                    new_intra_order.save()
+                user.intraday_balance = float(user.intraday_balance) - float(share_amount)
+                user.save()
+                new_order.GTC = False
+                new_order.save()
+                new_txn = models.TransactionHistory(
+                    userID = user,
+                    stock_symbol = stock_symbol,
+                    bought = False,
+                    quantity = quantity,
+                    share_price = price,
+                    trait = trait
+                )
+                new_txn.save()
+
+            elif quantity < share_quantity:
+                share_amount = quantity * price
+                if user_stock:
+                    user_stock.quantity = user_stock.quantity - quantity
+                    user_stock.save()
+                else:
+                    user_stock = models.IntradayStocksOwned(
+                        userID = user,
+                        stock_symbol = stock_symbol,
+                        quantity = -1 * quantity
+                    )
+                    user_stock.save()
+                user.intraday_balance = float(user.intraday_balance) + float(share_amount)
+                user.save()
+                new_txn = models.TransactionHistory(
+                    userID = user,
+                    stock_symbol = stock_symbol,
+                    bought = False,
+                    quantity = quantity,
+                    share_price = price,
+                    trait = trait
+                )
+                new_txn.save()
+                new_order.GTC = False
+                new_order.save()
+
+            if stop_loss != 0 or target_price != 0:
+                new_order.status_pending = True
+                new_order.save()
+
+            else:
+                new_order.status_pending = False
+                new_order.save()
+            return HttpResponseRedirect(reverse(portfolio))
+
+        else:
+            new_order.status_pending = True
+            new_order.save()
+            return HttpResponseRedirect(reverse(portfolio))
+
+    else:
+        return render(request, "VirtualStockMarketApp/BuySell.html", {
+                "stock_symbol": stock_symbol,
+                "message": "The order could not be placed. Please try again."
+            })
 
 def explore(request):
     # if user is not logged in
     if not request.user.get('user_id'):
         return HttpResponseRedirect(reverse(login_view))
     
-    return render(request, 'VirtualStockMarketApp/BuySell.html')
+    return render(request, 'VirtualStockMarketApp/Home.html')
 
 def home(request):
     if not request.session.get('user_id'):
@@ -335,5 +527,3 @@ def home(request):
     user_favourites = models.Favourites.objects.filter(id = request.session.get('user_id'))
     return render(request,'VirtualStockMarketApp/Home.html', {"user_favourites": user_favourites}) 
 
-def explore(request):
-    return render(request, 'VirtualStockMarketApp/Explore.html')

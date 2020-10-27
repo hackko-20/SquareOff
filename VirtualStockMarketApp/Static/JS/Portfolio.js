@@ -11,3 +11,12 @@ function openForm(evt, divisionName ) {
     document.getElementById(divisionName).style.display = "block";
     evt.currentTarget.className += " active";
 }
+
+function openDiv( divisionName ) {
+    var i, divisionElement;
+    divisionElement = document.getElementsByClassName("subClass");
+    for (i = 0; i < divisionElement.length; i++) {
+        divisionElement[i].style.display = "none";
+    }
+    document.getElementById(divisionName).style.display = "block";
+}

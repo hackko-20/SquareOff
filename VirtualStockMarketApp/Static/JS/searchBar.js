@@ -24,7 +24,7 @@ function search_api() {
                 document.getElementById("searchOption").appendChild(element);
                 document.getElementById("watermark").style.display = "none";
         })
-        .catch(error =>{
+        .catch(error => {
             alert("symbol not found");
             var prevLinks = document.getElementsByClassName("StockLink");
             for(var i=0;i<prevLinks.length;i++)

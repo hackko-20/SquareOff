@@ -1,9 +1,9 @@
 from django.contrib import admin
-from .models import User, Favourites, TransactionHistory, StocksOwned, OrderHistory
+from .models import User, Favourites, TransactionHistory, StocksOwned, OrderHistory, IntradayStocksOwned
 
 #Register your models here.
 class UserAdmin(admin.ModelAdmin):
-    list_display = ("first_name", "last_name", "username", "password", "balance")
+    list_display = ("first_name", "last_name", "username", "password", "balance", "intraday_balance")
 
 class FavouritesAdmin(admin.ModelAdmin):
     list_display = ("userID", "stock_symbol")
@@ -21,5 +21,6 @@ admin.site.register(User, UserAdmin)
 admin.site.register(Favourites, FavouritesAdmin)
 admin.site.register(TransactionHistory, TransactionHistoryAdmin)
 admin.site.register(StocksOwned, StocksOwnedAdmin)
+admin.site.register(IntradayStocksOwned)
 admin.site.register(OrderHistory, OrderHistoryAdmin)
 

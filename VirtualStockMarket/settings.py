@@ -32,6 +32,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'VirtualStockMarketApp',
+    'django_celery_beat',
+    'celerybeat_status',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -125,3 +127,38 @@ STATICFILES_DIRS = [
 
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+from celery.schedules import crontab   
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Kolkata'
+
+CELERY_BEAT_SCHEDULE = {
+    # 'test': {
+    #     'task': 'my_first_task',
+    #     'schedule': crontab()
+    # },
+    'end_of_market_calculations': {
+        'task': 'end_of_market_calculations',
+        'schedule': crontab(minute='30', hour='1', day_of_week='tue,wed,thurs,fri,sat')
+    },
+    'execute_delayed_orders': {
+        'task': 'execute_delayed_orders',
+        'schedule': crontab()
+    },
+    'execute_delayed_orders_mon': {
+        'task': 'execute_delayed_orders',
+        'schedule': crontab(hour='19,20,21,22,23', day_of_week='mon')
+    },
+    'execute_delayed_orders_sat': {
+        'task': 'execute_delayed_orders',
+        'schedule': crontab(hour='0,1', day_of_week='sat')
+    },
+    'scraping_expired_orders': {
+        'task': 'scraping_expired_orders',
+        'schedule': crontab(minute='30', hour='1', day_of_week='tue,wed,thurs,fri,sat')
+    }
+}

@@ -18,7 +18,7 @@
         <!-- Top Navigation Menu -->
         <div class="topnav">
           <a href="portfolio" style="background:#4169E1;">Portfolio</a>
-          <div id="myLinks" style="background: #4169E1;;">
+          <div id="myLinks" style="background: #4169E1;">
             <a href="home">Explore Stocks</a>
             <a href="home">Home</a>
             <a href="logout">Log Out</a>
@@ -26,52 +26,47 @@
           <a href="javascript:void(0);" class="icon" onclick="myFunction()">
             <i class="fa fa-bars"></i>
           </a>
+        </div>  
+        <!-- End smartphone / tablet look -->
         </div>
-              
-              <!-- End smartphone / tablet look -->
-              </div>
-              <script>                                    
-                  function myFunction() {
-                      var x = document.getElementById("myLinks");
-                      if (x.style.display === "block") {
-                        x.style.display = "none";
-                      } else {
-                        x.style.display = "block";
-                      }
-                    }
-              </script>
+        <script>                                    
+            function myFunction() {
+                var x = document.getElementById("myLinks");
+                if (x.style.display === "block") {
+                  x.style.display = "none";
+                } else {
+                  x.style.display = "block";
+                }
+              }
+        </script>
         <div class="header">
             <div class="logo"></div>
             <div class="heading"><h1>Hello, Trader {{ user.first_name }}</h1></div>
         </div>
-        <div class="accordion" id="accordionDisplay">
+        <div>
             <div class = "navbar">
                 <ul class="nav">
-                    <li class="nav-item" id="headingOne">
-                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#NW" aria-expanded="true" aria-controls="NW">Profile</button>
+                    <li class="nav-item">
+                        <button class="btn btn-link" type="button" data-toggle="collapse" onclick="openDiv('NW')">Profile</button>
                     </li>
-                    <li class="nav-item" id="headingTwo">
-                        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#TH" aria-expanded="false" aria-controls="TH">Transaction History</button>
+                    <li class="nav-item">
+                        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" onclick="openDiv('TH')">Transaction History</button>
                     </li>
-                    <li class="nav-item" id="headingThree"></li>
-                        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#PL" aria-expanded="false" aria-controls="PL">Profit/Loss Statement</button>
+                    <li class="nav-item"></li>
+                        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" onclick="openDiv('PL')">Profit/Loss Statement</button>
                     </li>
-                    <li class="nav-item" id="headingFour">
-                        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#FV" aria-expanded="false" aria-controls="FV">Favourites</button>
-                    </li>
-                    <li class="nav-item" id="headingFive">
-                        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#stocksOwned" aria-expanded="false" aria-controls="stocksOwned">Your Stock Holdings</button>
-                    </li>   
+                    <li class="nav-item">
+                        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" onclick="openDiv('FV')">Favourites</button>
+                    </li>  
                 </ul>
-                <div class="ExploreButton"><a href="explore">Go To Explore Menu!</a></div>
             </div>
             <div class = "mainContent">
                 <!--Profile section -->
-                <div class = "networth collapse show" aria-labelledby="headingOne" data-parent="#accordionDisplay" id="NW">
+                <div class = "subClass networth" id="NW">
                     <div class = "profile">
                         <div class = "insights">
                             <h3>Your Trading Insights</h3><br><br>
-                            <p>Net Worth :</p><span style="color: #4bf561;float:right;"><strong>&#36;{{ net_worth }}</strong></span><br>
+                            <p>Net Worth :</p><span style="color: #4bf561;float:right;"><strong>&#36;{{ net_worth|floatformat:2 }}</strong></span><br>
                             <p>Overall Gain/Loss:</p>{% if net_worth|add:"-1000000" >= 0 %}<span style="color: #4bf561;float:right;"><strong>&#36;{{ net_worth|add:"-1000000" }}</strong></span><br>
                             {% else %}<span style="color: #eb5e4c;float:right;"><strong>&#36;{{ net_worth|add:"-1000000" }}</strong></span><br>
                             {% endif %}
@@ -85,14 +80,14 @@
                 </div>
 
                 <!-- Transaction History section -->
-                <div class="transactHistory collapse" aria-labelledby="headingTwo" data-parent="#accordionDisplay" id="TH">
+                <div class="subClass transactHistory" id="TH">
                     <h3>Transaction history</h3><br><br>
                     <table class="table table-striped table-dark table-sm tableHistory">
                         <thead>
                           <tr>
                             <th scope="col" class="columnHeads" style="padding:7px;">#</th>
                             <th scope="col" class="columnHeads" style="padding:7px;">Stock Symbol</th>
-                            <th scope="col" class="columnHeads" style="padding:7px;">Bought/Sold</th>
+                            <th scope="col" class="columnHeads" style="padding:7px;">Type</th>
                             <th scope="col" class="columnHeads" style="padding:7px;">Quantity</th>
                             <th scope="col" class="columnHeads" style="padding:7px;">Share Price</th>
                           </tr>
@@ -103,9 +98,9 @@
                             <th scope="row" id="rowNum"></th>
                             <td>{{ txn.stock_symbol }}</td>
                             {% if txn.bought == True %}
-                            <td style="color: #18f035;font-weight: 600;">Bought</td>
+                            <td style="color: #18f035;font-weight: 600;">{{ txn.trait }}</td>
                             {% else %}
-                            <td style="color: #e7a108;font-weight: 600;">Sold</td>
+                            <td style="color: #e7a108;font-weight: 600;">{{ txn.trait }}</td>
                             {% endif %}
                             <td>{{ txn.quantity }}</td>
                             <td>{{ txn.share_price }}</td>
@@ -116,39 +111,37 @@
                 </div>
 
                 <!-- Profit section -->
-                <div class="profit collapse" aria-labelledby="headingThree" data-parent="#accordionDisplay" id="PL">
+                <div class="subClass profit" id="PL">
                     <h3>Profit/Loss Statement: </h3><br>
                     <h5>Overall Gain:&nbsp;&nbsp;{% if net_worth|add:"-1000000" >= 0 %}<span style="color: #4bf561;"><strong>&#36;{{ net_worth|add:"-1000000" }}</strong></span><br>
                         {% else %}<span style="color: #eb5e4c;"><strong>&#36;{{ net_worth|add:"-1000000" }}</strong></span><br>
                         {% endif %}</h5>
-                    <h5>Today's Gain: &#36; 0</h5>
+                    <h5>Today's Gain: &#36; 0</h5><br>
+                    <div class="stocksOwned collapse" id="stocksOwned"></div>
+                      <h3>Current Stock Holdings: </h3>
+                      <table class="table table-striped table-sm table-dark tableStocks">
+                        <thead>
+                          <tr>
+                            <th scope="col" class="columnHeads" style="padding:7px;">#</th>
+                            <th scope="col" class="columnHeads" style="padding:7px;">Stock Symbol</th>
+                            <th scope="col" class="columnHeads" style="padding:7px;">Quantity</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for row in user_stocks_owned %}
+                          <tr>
+                            <th scope="row"></th>
+                            <td>{{ row.stock_symbol }}</td>
+                            <td>{{ row.quantity }}</td>
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
                 </div>
-
-                <!--Stocks owned-->
-                <div class="stocksOwned collapse" aria-labelledby="headingFive" data-parent="#accordionDisplay" id="stocksOwned">
-                  <h3>Current Stock Holdings: </h3>
-                  <table class="table table-striped table-dark tableStocks">
-                    <thead>
-                      <tr>
-                        <th scope="col" class="columnHeads" style="padding:7px;">#</th>
-                        <th scope="col" class="columnHeads" style="padding:7px;">Stock Symbol</th>
-                        <th scope="col" class="columnHeads" style="padding:7px;">Quantity</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {% for row in user_stocks_owned %}
-                      <tr>
-                        <th scope="row"></th>
-                        <td>{{ row.stock_symbol }}</td>
-                        <td>{{ row.quantity }}</td>
-                      </tr>
-                      {% endfor %}
-                    </tbody>
-                  </table>
-                </div>
-
+              
                 <!-- Favourites -->
-                <div class = "favourites collapse" aria-labelledby="headingFour" data-parent="#accordionDisplay" id="FV">
+                <div class = "subClass favourites" id="FV">
                     <h3>Favourites</h3><br><br>
                     <table class="table table-striped table-dark table-sm tableHistory">
                         <thead>
@@ -188,4 +181,6 @@
             </div>
         </div>
     </body>
+    <!-- JS file -->
+    <script src="{% static 'JS/Portfolio.js' %}"></script>
 </html>
