@@ -24,6 +24,9 @@ body {
   .topnav #myLinks {
     display: none;
   }
+  .topnav #myLinks2{
+    display: none;
+  }
   
   .topnav a {
     color: white;
