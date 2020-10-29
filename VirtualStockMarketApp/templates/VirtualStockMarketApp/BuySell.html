@@ -34,26 +34,26 @@
             
             <!-- End smartphone / tablet look -->
             </div>
-            <script>                                    
-                function myFunction() {
-                    var x = document.getElementById("myLinks");
-                    if (x.style.display === "block") {
-                        x.style.display = "none";
-                    } else {
-                        x.style.display = "block";
+                <script>                                    
+                    function myFunction() {
+                        var x = document.getElementById("myLinks");
+                        if (x.style.display === "block") {
+                            x.style.display = "none";
+                        } else {
+                            x.style.display = "block";
+                        }
                     }
-                }
-            </script>
-        </div>
-        <div class="mainContent" style="background-color: #ffffff;">
-            {% if message %}
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                <strong>{{ message }}</strong>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                </script>
             </div>
-            {% endif %}
+            <div class="mainContent" style="background-color: #ffffff;">
+                {% if message %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>{{ message }}</strong>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {% endif %}
             <!-- Stock Details -->
             <div class="stockDetails">
                 {% if stock %}
@@ -71,8 +71,8 @@
                     <div class="card" style="border-radius: 0;background-color: #aaa9a9;">
                         <p>Week 52 Low Price: <br>{{ stock.week52Low }}</p>
                     </div>
-                </div><br><br>
-                
+                </div>
+                <br><br>   
                 <div id="graphs">
                     <script type="text/javascript">
                         var symbol = "{{ stock.symbol }}";
@@ -89,7 +89,8 @@
                     </div>
                     <div id="Candlestick" class="graph" style="display:block;"></div>
                     <div id="Line" class="graph"></div>
-                    <div id="Bar" class="graph"></div>
+                    <div id="Bar" class="graph"></div><br>
+                    <p>Last Updated: {{ stock.latestTime }}</p>
                     <!-- <p>Stock Chart Here! Forms Below.</p> -->
                 </div>
             </div>

@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'VirtualStockMarketApp',
     'django_celery_beat',
     'celerybeat_status',
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -159,6 +160,6 @@ CELERY_BEAT_SCHEDULE = {
     },
     'scraping_expired_orders': {
         'task': 'scraping_expired_orders',
-        'schedule': crontab(minute='30', hour='1', day_of_week='tue,wed,thurs,fri,sat')
+        'schedule': crontab(hour='2', day_of_week='tue,wed,thurs,fri,sat')
     }
 }

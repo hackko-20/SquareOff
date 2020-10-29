@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Favourites, TransactionHistory, StocksOwned, OrderHistory, IntradayStocksOwned
+from .models import User, Favourites, TransactionHistory, StocksOwned, OrderHistory, IntradayStocksOwned, MonthlyAnalysis
 
 #Register your models here.
 class UserAdmin(admin.ModelAdmin):
@@ -23,4 +23,5 @@ admin.site.register(TransactionHistory, TransactionHistoryAdmin)
 admin.site.register(StocksOwned, StocksOwnedAdmin)
 admin.site.register(IntradayStocksOwned)
 admin.site.register(OrderHistory, OrderHistoryAdmin)
+admin.site.register(MonthlyAnalysis)
 

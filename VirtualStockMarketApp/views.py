@@ -3,14 +3,18 @@ from hashlib import sha256
 from . import models
 from django.db import IntegrityError
 from django.urls import reverse
-from iexfinance.stocks import get_historical_data
 from django.http import HttpResponseRedirect, request, HttpResponse
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from django.utils import timezone
 import os
 import requests
 from . import tasks
+import json
+from datetime import date,time
 
-# api key 
+
+# api key  
 if not os.getenv('IEX_TOKEN'):
     raise RuntimeError("API Key not set.")
 api_key = os.getenv('IEX_TOKEN')
@@ -22,6 +26,22 @@ def test_celery(request):
     tasks.my_first_task.delay(100)
     return HttpResponse("good to go!")
 
+class chartData(APIView):
+    def get(self, request, format=None):
+        if not request.session.get('user_id'):
+            return HttpResponseRedirect(reverse(login_view))
+
+        user_monthly_analysis = models.MonthlyAnalysis.objects.filter(userID = request.session.get('user_id'))
+        labels = []
+        values = []
+        for row in user_monthly_analysis:
+            labels.append(row.timestamp)
+            values.append(row.profit)
+        context = {
+            'labels': labels,
+            'values': values
+        }
+        return Response(context)
 
 def register_view(request):
     """
@@ -132,7 +152,8 @@ def portfolio(request):
     user_favourites = models.Favourites.objects.filter(userID = request.session.get('user_id'))
     user_txn_history = models.TransactionHistory.objects.filter(userID = request.session.get('user_id'))
     user_stocks_owned = models.StocksOwned.objects.filter(userID = request.session.get('user_id'))
-    
+    user_monthly_analysis = models.MonthlyAnalysis.objects.filter(userID = user.id)
+
     # calculation of net worth of the user
     net_worth = user.balance
     num_stocks_owned = 0.
@@ -147,15 +168,17 @@ def portfolio(request):
 
     #  calculation of profit/loss
     total_profit = 0
-    for row in user_stocks_owned:
-        profit = 0
-        stock_list = user_txn_history.filter(stock_symbol = row.stock_symbol)
-        for stock in stock_list:
-            if stock.bought == True:
-                profit -= (stock.quantity * stock.share_price)
-            else:
-                profit += (stock.quantity * stock.share_price)
-        total_profit += profit  
+    stock_list = user_txn_history
+    for stock in stock_list:
+        if stock.bought == True:
+            total_profit -= (stock.quantity * stock.share_price)
+        else:
+            total_profit += (stock.quantity * stock.share_price)
+    try:
+        prev_profit = user_monthly_analysis.get(timestamp = date.today()).profit
+        day_profit = total_profit - prev_profit
+    except:
+        day_profit = total_profit
     
     return render(request, 'VirtualStockMarketApp/Portfolio.html', {
         "user_favourites": user_favourites, 
@@ -163,7 +186,9 @@ def portfolio(request):
         "net_worth": net_worth, 
         "profit": total_profit, 
         "user": user,
-        "user_stocks_owned": user_stocks_owned
+        "user_stocks_owned": user_stocks_owned,
+        "user_monthly_analysis": user_monthly_analysis,
+        "day_profit": day_profit
     })
 
 def place_order(request):
@@ -183,7 +208,7 @@ def place_order(request):
             response = requests.get(url)
             stock_details = response.json()
             return render(request, 'VirtualStockMarketApp/BuySell.html', {"stock": stock_details})
-        return HttpResponseRedirect(reverse(explore))   
+        return HttpResponseRedirect(reverse(home))   
     
     # if the user submits data to place an order
     trait = request.POST["TRAIT"]

@@ -12,6 +12,11 @@ class User(models.Model):
     password = models.CharField(max_length=30)
     balance = models.DecimalField(max_digits=50, decimal_places=2, null=True, default=1.e6)
     intraday_balance = models.DecimalField(max_digits=50, decimal_places=2, null=True, default=3.e6)
+
+class MonthlyAnalysis(models.Model):
+    userID = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    timestamp = models.DateField(null=False)
+    profit = models.DecimalField(max_digits=50, decimal_places=2, null=True, default=0)
     
 class Favourites(models.Model):
     userID = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)

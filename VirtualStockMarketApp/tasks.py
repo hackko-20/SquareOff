@@ -5,6 +5,8 @@ from . import models
 import os
 import requests
 from datetime import date, timedelta
+from django.utils import timezone
+from django.db.models import Q
 
 if not os.getenv('IEX_TOKEN'):
     raise RuntimeError("API Key not set.")
@@ -49,7 +51,7 @@ def end_of_market():
                             current_price = requests.get(url).json()["latestPrice"]
                             share_amount = user_stock.quantity * current_price
                             if share_amount > user.balance:
-                                #reset()
+                                #reset
                                 pass
                             else:
                                 user.balance = float(user.balance) - float(share_amount)
@@ -67,20 +69,27 @@ def end_of_market():
 
                 # calculate day's profit/loss
                 user_txns = models.TransactionHistory.objects.filter(userID = user.id)
-                user_intraday_txns_bought = user_txns.filter(trait = 'IB')
+                user_txns_bought = user_txns.filter(bought = True)
                 profit = 0
-                for txn in user_intraday_txns_bought:
+                for txn in user_txns_bought:
                     profit = float(profit) - (float(txn.share_price) * float(txn.quantity))
-                user_intraday_txns_sold = user_txns.filter(trait = 'CB')
-                for txn in user_intraday_txns_sold:
+                user_txns_sold = user_txns.filter(bought = False)
+                for txn in user_txns_sold:
                     profit = float(profit) + (float(txn.share_price) * float(txn.quantity))
                 user.balance = float(user.balance) + float(profit)
                 user.save()
+                new_data_point = models.MonthlyAnalysis(
+                    userID = user,
+                    timestamp = date.today(),
+                    profit = profit
+                )
+                new_data_point.save()
                 # save it to the month model
 
                 # reset user's intraday balance
                 user.intraday_balance = 3.0 * user.balance
                 user.save()
+                
             except:
                 user.intraday_balance = 3.0 * user.balance
                 user.save()

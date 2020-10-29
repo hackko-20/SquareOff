@@ -9,6 +9,13 @@
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+        <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+        <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
+        <script src="//cdn.amcharts.com/lib/4/maps.js"></script>
+        <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
         <title>Portfolio</title>
         <script>
         </script>
@@ -29,16 +36,6 @@
         </div>  
         <!-- End smartphone / tablet look -->
         </div>
-        <script>                                    
-            function myFunction() {
-                var x = document.getElementById("myLinks");
-                if (x.style.display === "block") {
-                  x.style.display = "none";
-                } else {
-                  x.style.display = "block";
-                }
-              }
-        </script>
         <div class="header">
             <div class="logo"></div>
             <div class="heading"><h1>Hello, Trader {{ user.first_name }}</h1></div>
@@ -64,17 +61,27 @@
                 <!--Profile section -->
                 <div class = "subClass networth" id="NW">
                     <div class = "profile">
+                      <div class="wrapper">
                         <div class = "insights">
                             <h3>Your Trading Insights</h3><br><br>
-                            <p>Net Worth :</p><span style="color: #4bf561;float:right;"><strong>&#36;{{ net_worth|floatformat:2 }}</strong></span><br>
-                            <p>Overall Gain/Loss:</p>{% if net_worth|add:"-1000000" >= 0 %}<span style="color: #4bf561;float:right;"><strong>&#36;{{ net_worth|add:"-1000000" }}</strong></span><br>
-                            {% else %}<span style="color: #eb5e4c;float:right;"><strong>&#36;{{ net_worth|add:"-1000000" }}</strong></span><br>
+                            <p>Net Worth :</p><span style="color: #4bf561;float:right;font-family:'Courier New';"><strong>&#36;{{ net_worth|floatformat:2 }}</strong></span><br>
+                            <p>Overall Gain/Loss:</p>{% if profit >= 0 %}<span style="color: #0af529;float:right;font-family:'Courier New';"><strong>&#36;{{ profit }}</strong></span><br>
+                            {% else %}<span style="color: #eb5e4c;float:right;font-family:'Courier New';"><strong>&#36;{{ profit }}</strong></span><br>
                             {% endif %}
-                            <p>Today's Gain/Loss:</p><span style="color: #4bf561;float:right"><strong> &#36;</strong></span><br>
+                            <p>Today's Gain/Loss:</p>{% if day_profit >= 0 %}<span style="color: #0fee2d;float:right;font-family:'Courier New';"><strong>&#36;{{ day_profit }}</strong></span><br>
+                            {% else %}<span style="color: #eb5e4c;float:right;font-family:'Courier New';"><strong>&#36;{{ day_profit }}</strong></span><br>
+                            {% endif %}
                         </div>
+                        <br>
+                        <div class = "insights">
+                          <h3>Balances</h3><br><br>
+                          <p>Cash Balance :</p><span style="color: #4bf561;float:right;font-family:'Courier New';"><strong>&#36;{{ user.balance|floatformat:2 }}</strong></span><br>
+                          <p>Intraday Balance</p><span style="color: #0af529;float:right;font-family:'Courier New';"><strong>&#36;{{ user.intraday_balance }}</strong></span><br>
+                        </div>
+                      </div>
                         <div class = "personalGraph"> 
-                            <h3>Your Status : Month </h3>
-                            <p>Graph comes here</p>
+                            <h3>Your Status</h3><br><br>
+                            <canvas id="statusGraph"></canvas>
                         </div>
                     </div>
                 </div>
@@ -82,6 +89,7 @@
                 <!-- Transaction History section -->
                 <div class="subClass transactHistory" id="TH">
                     <h3>Transaction history</h3><br><br>
+                    {% if user_transact_history %}
                     <table class="table table-striped table-dark table-sm tableHistory">
                         <thead>
                           <tr>
@@ -97,10 +105,18 @@
                           <tr>
                             <th scope="row" id="rowNum"></th>
                             <td>{{ txn.stock_symbol }}</td>
-                            {% if txn.bought == True %}
-                            <td style="color: #18f035;font-weight: 600;">{{ txn.trait }}</td>
+                            {% if txn.trait == 'CB' %}
+                            <td style="color: #18f035;font-weight: 600;">Cash Buy</td>
+                            {% elif txn.trait == 'IB' %}
+                            <td style="color: #18f035;font-weight: 600;">Intraday Buy</td>
+                            {% elif txn.trait == 'CS' %}
+                            <td style="color: #cc9f0c;font-weight: 600;">Cash Sell</td>
+                            {% elif txn.trait == 'IS' %}
+                            <td style="color: #cc9f0c;font-weight: 600;">Intraday Sell</td>
+                            {% elif txn.trait == 'SS' %}
+                            <td style="color: #cc0c0c;font-weight: 600;">Short Sell</td>
                             {% else %}
-                            <td style="color: #e7a108;font-weight: 600;">{{ txn.trait }}</td>
+                            <td style="color: #cc0c0c;font-weight: 600;">Short Buy</td>
                             {% endif %}
                             <td>{{ txn.quantity }}</td>
                             <td>{{ txn.share_price }}</td>
@@ -108,76 +124,87 @@
                           {% endfor %}
                         </tbody>
                       </table>
+                      {% else %}
+                      <div>
+                        <center><h3 style="color: lightgrey;margin-top:40px;">No transactions to show</h3>
+                        <a href="home" style="color:white;">Search up Stocks!</a></center>
+                      </div>
+                      {% endif %}
                 </div>
 
                 <!-- Profit section -->
                 <div class="subClass profit" id="PL">
-                    <h3>Profit/Loss Statement: </h3><br>
-                    <h5>Overall Gain:&nbsp;&nbsp;{% if net_worth|add:"-1000000" >= 0 %}<span style="color: #4bf561;"><strong>&#36;{{ net_worth|add:"-1000000" }}</strong></span><br>
-                        {% else %}<span style="color: #eb5e4c;"><strong>&#36;{{ net_worth|add:"-1000000" }}</strong></span><br>
-                        {% endif %}</h5>
-                    <h5>Today's Gain: &#36; 0</h5><br>
-                    <div class="stocksOwned collapse" id="stocksOwned"></div>
-                      <h3>Current Stock Holdings: </h3>
-                      <table class="table table-striped table-sm table-dark tableStocks">
-                        <thead>
-                          <tr>
-                            <th scope="col" class="columnHeads" style="padding:7px;">#</th>
-                            <th scope="col" class="columnHeads" style="padding:7px;">Stock Symbol</th>
-                            <th scope="col" class="columnHeads" style="padding:7px;">Quantity</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {% for row in user_stocks_owned %}
-                          <tr>
-                            <th scope="row"></th>
-                            <td>{{ row.stock_symbol }}</td>
-                            <td>{{ row.quantity }}</td>
-                          </tr>
-                          {% endfor %}
-                        </tbody>
-                      </table>
-                    </div>
+                  <div class="profitInfo">
+                      <h4>Profit/Loss Statement: </h4><br>
+                      <p>Overall Gain:&nbsp;&nbsp;{% if profit >= 0 %}<span style="color: #4bf561;"><strong>&#36;{{ profit }}</strong></span><br>
+                          {% else %}<span style="color: #eb5e4c;"><strong>&#36;{{ profit }}</strong></span><br>
+                          {% endif %}</p>
+                      <p>Today's Gain:&nbsp;&nbsp;{% if day_profit >= 0 %}<span style="color: #4bf561;"><strong>&#36;{{ day_profit }}</strong></span><br>
+                        {% else %}<span style="color: #eb5e4c;"><strong>&#36;{{ day_profit }}</strong></span><br>
+                        {% endif %}</p>
+                  </div>
+                  <br><br>
+                  <h3>Current Stock Holdings: </h3>
+                  {% if user_stocks_owned %}
+                  <table class="table table-striped table-sm table-dark tableStocks">
+                    <thead>
+                      <tr>
+                        <th scope="col" class="columnHeads" style="padding:7px;">#</th>
+                        <th scope="col" class="columnHeads" style="padding:7px;">Stock Symbol</th>
+                        <th scope="col" class="columnHeads" style="padding:7px;">Quantity</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for row in user_stocks_owned %}
+                      <tr>
+                        <th scope="row"></th>
+                        <td>{{ row.stock_symbol }}</td>
+                        <td>{{ row.quantity }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                  {% else %}
+                  <div>
+                    <center><h3 style="color: lightgrey;margin-top:40px;">You currently do not have any holdings</h3>
+                    <a href="home" style="color:white;">Search up Stocks!</a></center>
+                  </div>
+                  {% endif %}
                 </div>
-              
+
                 <!-- Favourites -->
                 <div class = "subClass favourites" id="FV">
-                    <h3>Favourites</h3><br><br>
+                  {% if user_favourites %}
+                  <h3>Favourites</h3><br><br>
                     <table class="table table-striped table-dark table-sm tableHistory">
-                        <thead>
+                      <thead>
+                        <tr>
+                          <th scope="col" class="columnHeads" style="padding:7px;">#</th>
+                          <th scope="col" class="columnHeads" style="padding:7px;">Stock Symbol</th>
+                          <th scope="col" class="columnHeads" style="padding:7px;">Current Share Price</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                          {% for favStocks in user_favourites %}
+                          <script type="text/javascript">
+                              var symbol = "{{ favStocks.stock_symbol }}";
+                          </script>
                           <tr>
-                            <th scope="col" class="columnHeads" style="padding:7px;">#</th>
-                            <th scope="col" class="columnHeads" style="padding:7px;">Stock Symbol</th>
-                            <th scope="col" class="columnHeads" style="padding:7px;">Current Share Price</th>
+                              <th scope="row"></th>
+                              <td>{{ favStocks.stock_symbol }}</td>
+                              <td id="stock_symbolCol"></td>
                           </tr>
-                        </thead>
-                        <tbody>
-                            {% for favStocks in user_favourites %}
-                            <script type="text/javascript">
-                                let api_key = "pk_245073c85596466aa6afff012f007125";
-                                var symbol = "{{ favStocks.stock_symbol }}";
-                                console.log(symbol);
-                                let url = "https://cloud.iexapis.com/" + "stable/stock/" + symbol + "/quote?token=" + api_key;
-                                fetch(url)
-                                    .then(response => response.json())
-                                    .then(data => {
-                                            console.log("in data");
-                                            var x=data.latestPrice;
-                                            document.getElementById("stock_symbolCol").innerHTML = " " + x + " ";
-                                    })
-                                    .catch(error => {
-                                        alert("stock symbol not found");
-                                    });
-                            </script>
-                            <tr>
-                                <th scope="row"></th>
-                                <td>{{ favStocks.stock_symbol }}</td>
-                                <td id="stock_symbolCol"></td>
-                            </tr>
-                          {% endfor %}
-                        </tbody>
-                      </table>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                    {% else %}
+                    <div>
+                      <center><h3 style="color: lightgrey;margin-top:40px;">You haven't added any favourites yet</h3>
+                      <a href="home" style="color:white;">Search up Stocks!</a></center>
+                    </div>
+                    {% endif %}
                 </div>
+                
             </div>
         </div>
     </body>

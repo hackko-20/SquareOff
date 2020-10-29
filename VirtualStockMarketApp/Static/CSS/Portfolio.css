@@ -17,13 +17,13 @@ body {
     overflow: hidden;
     background-color: #333;
     position: relative;
-  }
+}
   
-  .topnav #myLinks {
+.topnav #myLinks {
     display: none;
   }
   
-  .topnav a {
+.topnav a {
     color: white;
     padding: 14px 16px;
     text-decoration: none;
@@ -31,19 +31,19 @@ body {
     display: block;
   }
   
-  .topnav a.icon {
+.topnav a.icon {
     display: block;
     position: absolute;
     right: 0;
     top: 0;
   }
   
-  .topnav a:hover {
+.topnav a:hover {
     background-color: #ddd;
     color: black;
   }
   
-  .active {
+.active {
     background-color: #4169E1;
     color: white;
   }
@@ -111,19 +111,28 @@ body {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
+    height:100%;
     width:100%;
     position: relative;
     flex-wrap: wrap;
     align-items: flex-start;
+    overflow-y: auto;   
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30%;
 }
 
 .insights {
     background-color: #ffffff;
-    width: 30%;
     padding: 20px;
     font-family: 'Fira Sans';
     font-weight: 400;
     font-size: 15px;
+    overflow-y: auto;
 }
 
 .insights > h3 {
@@ -149,21 +158,21 @@ body {
 }
 
 /* Transaction History section */
-.transactHistory .stocksOwned {
+.transactHistory, .stocksOwned {
     padding: 20px 20px 20px 20px; 
     background-color:#4169E1;
     flex: 1;
     width: 100%;
     justify-content: space-around; 
+    overflow-y: auto;
 }
 
-.transactHistory > h3 .stocksOwned > h3 {
+.transactHistory > h3, .stocksOwned > h3 {
     text-align: center;
     color: #ffffff;
     font-family: "Montserrat";
     font-size: 30px;
-    font-weight: 800;
-    
+    font-weight: 800;   
 }
 
 .tableHistory, .tableStocks {
@@ -174,6 +183,16 @@ body {
 }
 
 /* profit section */
+
+.profitInfo {
+    background-color:white;
+    width: 100%; 
+    padding:20px;
+    color: #5d5d5e;
+    font-family: 'Fira Sans';
+    font-weight: 400;
+    font-size: 15px;
+}
 
 .profit {
     padding: 20px 20px 20px 20px; 
@@ -210,4 +229,18 @@ body {
 .favourites > h3 {
     text-align: center;
     color: #ffffff;
+}
+
+@media (max-width: 991px) {
+    .prfoile {
+        flex-direction: column;
+        width: 100%;
+        justify-content: flex-start;
+    }
+    .wrapper {
+        width:100%;
+    }
+    .personalGraph {
+        width:100%;
+    }
 }
