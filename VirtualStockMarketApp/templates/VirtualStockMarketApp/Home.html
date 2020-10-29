@@ -19,8 +19,14 @@
     <div class="topnav" style="background: #4169E1;">
       <a href="home" style="background: #4169E1;" class="active">Home</a>
       <div id="myLinks">
-        <a href="portfolio">Portfolio</a>
-        <a href="home">Explore Stocks</a>
+        <a onclick="myFunction2()"style="color: white;">Portfolio</a>
+        <div id="myLinks2" >
+          <a href="portfolio" >portfolio</a>
+          <a href="#NW">profile</a>
+          <a href="#TH">transaction history</a>
+          <a href="#PL">profit/loss statement</a>
+          <a href="#FV">favourites</a>
+        </div>
         <a href="logout">Log Out</a>
       </div>
       <a href="javascript:void(0);" class="icon" onclick="myFunction()">
@@ -51,11 +57,11 @@
   <footer class="site-footer">
           <div class="container">
             <div class="row">
-              <div class="col-sm-12 col-md-6">
+              <div class="col-sm-12 col-md-4">
                 <h6>About</h6>
                 <p class="text-justify">Square Off <br><i>Learn to be a Professional trader</i></p>
               </div>
-              <div class="col-xs-6 col-md-3">
+              <div class="col-xs-6 col-md-4">
                 <h6>Members</h6>
                 <ul class="footer-links">
                   <li><a href="#">About Us</a></li>
@@ -63,6 +69,14 @@
                   <li><a href="#">Contribute</a></li>
                 </ul>
               </div>
+              <div class="col-xs-6 col-md-4">
+                  <h6>Quick Links</h6>
+                  <ul class="footer-links">
+                    <li><a href="#">Transaction History</a></li>
+                    <li><a href="#">Profit/Loss Statement</a></li>
+                    <li><a href="#">Favourites</a></li>
+                  </ul>
+                </div>
             </div>
             <hr>
           </div>
