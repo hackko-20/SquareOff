@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <link rel="stylesheet" href="{% static 'CSS/ruleset.css' %}">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">   
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <title>Home</title>
+    </head>
+    <body>
+            <div class="topnav" style="background: #4169E1;">
+                    <a href="home" style="background: #4169E1;" class="active">Home</a>
+                    <div id="myLinks">
+                      <a onclick="myFunction2()"style="color: white;">Portfolio</a>
+                      <div id="myLinks2" >
+                        <a href="portfolio" >portfolio</a>
+                        <a href="#NW">profile</a>
+                        <a href="#TH">transaction history</a>
+                        <a href="#PL">profit/loss statement</a>
+                        <a href="#FV">favourites</a>
+                      </div>
+                      <a href="logout">Log Out</a>
+                    </div>
+                    <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+                      <i class="fa fa-bars"></i>
+                    </a>
+                  </div>
+                  <div class="header">
+                        <div class="heading"><h1>RULESET</h1></div>
+                    </div>
+                    <hr>
+        <ul>
+            <li>You will be given $ 1,000,000 at the moment of sign up. This will be your cash balance</li>
+            <li>Every day during market hours, you can make trades, buy and sell stocks. The market hours are from 7:00PM IST to 1:30PM IST</li>
+            <li>You can make intraday trades. All the transactions made during the day(intraday) should be squared off by the end of the day. The intraday trading limit is always 3 times your cash balance as present at the start of the market hours.</li>
+            <li>If your intraday transactions are not squared off by you at the end of the day, they will be squared off automatically (buying/selling stocks at market price)<br>
+                In case you do not have sufficient funds for such transactions, your profile will be automatically reset</li>
+            <li>You can track stocks of your choice by adding them to the favourites</li>
+            <li>When your Cash balance becomes zero, your profile will be automatically reset</li>
+        </ul>
+        <footer class="site-footer">
+                <div class="container">
+                  <div class="row">
+                    <div class="col-sm-12 col-md-4">
+                      <h6>About</h6>
+                      <p class="text-justify">Square Off <br><i>Learn to be a Professional trader</i></p>
+                    </div>
+                    <div class="col-xs-6 col-md-4">
+                      <h6>Members</h6>
+                      <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Contribute</a></li>
+                      </ul>
+                    </div>
+                    <div class="col-xs-6 col-md-4">
+                        <h6>Quick Links</h6>
+                        <ul class="footer-links">
+                          <li><a href="#">Transaction History</a></li>
+                          <li><a href="#">Profit/Loss Statement</a></li>
+                          <li><a href="#">Favourites</a></li>
+                        </ul>
+                      </div>
+                  </div>
+                  <hr>
+                </div>
+                <div class="container">
+                  <div class="row">
+                    <div class="col-md-8 col-sm-6 col-xs-12">
+                      <p class="copyright-text">Copyright &copy; 2020 All Rights Reserved by 
+                    <a href="#">Square Off</a>.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+          </footer>
+    </body>
+    <script>
+        function myFunction() {
+    var x = document.getElementById("myLinks");
+    if (x.style.display === "block") {
+      x.style.display = "none";
+    } else {
+      x.style.display = "block";
+    }
+  }
+function myFunction2() {
+    var x = document.getElementById("myLinks2");
+    if (x.style.display === "block") {
+      x.style.display = "none";
+    } else {
+      x.style.display = "block";
+    }
+}
+    </script>
+</html>

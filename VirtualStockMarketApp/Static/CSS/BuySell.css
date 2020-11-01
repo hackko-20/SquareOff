@@ -44,10 +44,10 @@ body {
     color: black;
 }
   
-  .active {
+.active {
     background-color: #4169E1;
     color: white;
-  }
+}
 
 /*----------*/
 .StockLink {
@@ -64,29 +64,12 @@ body {
     width:100%;
 }
 
-.searchBar {  
-    padding: 15px; 
-} 
 
-.searchButton {
-    background-color: black;
-    color: #ffffff;
-    font-weight: 400;
-    padding: 8px;
-    font-family: 'Montserrat';
-}
-
-.searchBar > input {
-    padding: 8px;
-    border-radius: 12px; 
-    border-color: black;
-    margin-right: 10px;
-} 
 /* ------ */
 .tab {
     overflow: hidden;
     border: 0px;
-    background-color: #4169E1;
+    background-color: #ffffff;
     padding: 10px;
 }
 
@@ -121,8 +104,8 @@ body {
     list-style-type: none;
     border-radius: 3px;
     padding: 45px;
-    width: 60%;
-    margin: auto;
+    width: 100%;
+    margin: 0%;
 }
 
 .form-row {
@@ -172,7 +155,7 @@ input[type=number] {
 /* Stock details div */
 .stockDetails {
     width:100%;
-    height: 150vh;
+    height: 150%;
     padding: 10px;
     margin: 10px;
     margin-bottom: 30px;
@@ -190,26 +173,25 @@ input[type=number] {
 }
 
 .cards {
-    display: flex;
     width:100%;
+    padding: 40px;
     flex-wrap: wrap;
     align-items: flex-start;
     border-radius: 0px;
-    border: 0px;
+    border: 2px;
+    border-color: #4169E1;
     justify-content: space-evenly;
+    display: flex;
+    flex-direction: row;
 }
 
-.card {  
-    font-family: "Fira Sans";
-    padding: 10px;
-    text-align: center;
-    color: #ffffff;
-    font-weight: 1000;
-    width: 20%;
-    font-size: 15px;
-    height:auto;
-    align-items: center;
-    
+.card1, .card2 {
+    width: 50%;
+    padding: 20px;
+}
+
+.card1 > p, .card2 > p {
+    display: inline;
 }
 
 #myLinks {

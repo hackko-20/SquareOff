@@ -21,11 +21,10 @@
       <div id="myLinks">
         <a onclick="myFunction2()"style="color: white;">Portfolio</a>
         <div id="myLinks2" >
-          <a href="portfolio" >portfolio</a>
-          <a href="#NW">profile</a>
-          <a href="#TH">transaction history</a>
-          <a href="#PL">profit/loss statement</a>
-          <a href="#FV">favourites</a>
+          <a href="portfolio">profile</a>
+          <a href="portfolio">transaction history</a>
+          <a href="portfolio">profit/loss statement</a>
+          <a href="portfolio">favourites</a>
         </div>
         <a href="logout">Log Out</a>
       </div>
@@ -42,6 +41,14 @@
       <div class="trends">
       </div>
       <!-- stock search bar -->
+      {% if message %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>{{ message }}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+      {% endif %}
       <div class="searchBar">
         <input id="searchbar" type="text" style="border: 1px solid lightgray;" name="search" placeholder="Enter stock symbol...">
         <button class="searchButton btn" onclick="search_api()"><i stye="display:inline;"class="fa fa-search fa-2x" aria-hidden="true"></i></button><br><br>
@@ -49,8 +56,14 @@
             <input id="ss" name="ss" style="display: none;">
         </form>
         <br><br>
-          <center><h3 style="color: #a8a7a798;" id="watermark">The link to the stock you searched will be displayed</h3></center>
-      </div> 
+          <center><h3 style="color: #a8a7a798;" id="watermark">The link to the stock you searched will be displayed</h3><br><br>
+            <form method="POST" action="add_to_fav">
+              {% csrf_token %}
+              <input name="addToFav" id="addToFav" style="display:none;">
+              <button id="FavButton" class="btn btn-secondary" type="submit" disabled>Add To Favourites</button>
+            </form>
+          </center>
+      </div>
     </div>
   </div>
   <!-- Site footer -->

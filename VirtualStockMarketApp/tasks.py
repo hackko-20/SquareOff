@@ -50,9 +50,27 @@ def end_of_market():
                             url = "https://cloud.iexapis.com/stable/stock/" + user_stock.stock_symbol + "/quote?token=" + api_key + "&filter=latestPrice"
                             current_price = requests.get(url).json()["latestPrice"]
                             share_amount = user_stock.quantity * current_price
+                            # check whether user has enough cash to buy the stocks he sold
                             if share_amount > user.balance:
-                                #reset
-                                pass
+                                # reset profile
+                                user_txns = models.TransactionHistory.objects.filter(userID = user.id)
+                                user_order_history = models.OrderHistory.objects.filter(userID = user.id)
+                                user_intraday_stocks = models.IntradayStocksOwned.objects.filter(userID = user.id)
+                                user_stocks = models.StocksOwned.objects.filter(userID = user.id)
+                                user_monthly_analysis = models.MonthlyAnalysis.objects.filter(userID = user.id)
+                                for row in user_txns:
+                                    row.delete()
+                                for row in user_intraday_stocks:
+                                    row.delete()
+                                for row in user_monthly_analysis:
+                                    row.delete()
+                                for row in user_stocks:
+                                    row.delete()
+                                for row in user_order_history:
+                                    row.delete()
+                                user.balance = 1000000.00
+                                user.intraday_balance = 3000000.00
+                                user.save()
                             else:
                                 user.balance = float(user.balance) - float(share_amount)
                                 user.save()
@@ -266,6 +284,7 @@ def delayed_orders():
                                                     )    
                                                     new_txn.save()
                                                     order.stop_loss = 0
+                                                    order.save()
                                             except:
                                                 continue
                                 elif order.trait == 'CS' or order.trait == 'IS':
@@ -325,7 +344,110 @@ def delayed_orders():
                                                 order.stop_loss = 0
                                                 order.save()
                             if order.target_price != 0:
-                                pass
+                                if order.trait == 'CB' or order.trait == 'IB':
+                                    if current_price >= order.target_price:
+                                        if order.trait == 'CB':
+                                            try:
+                                                user_current_stock = models.StocksOwned.objects.get(userID = user.id, stock_symbol = order.stock_symbol)
+                                                if user.current_stock.quantity >= order.quantity:
+                                                    user_current_stock.quantity = user_current_stock.quantity - order.quantity
+                                                    user_current_stock.save()
+                                                    user.balance = float(user.balance) + (float(order.quantity) * float(current_price))
+                                                    user.save()
+                                                    new_txn = models.TransactionHistory(
+                                                        userID = user,
+                                                        bought = False,
+                                                        stock_symbol = order.stock_symbol,
+                                                        quantity = order.quantity,
+                                                        share_price = current_price,
+                                                        trait = 'CS'
+                                                    )    
+                                                    new_txn.save()
+                                                    order.target_price = 0
+                                                    order.save()
+                                            except:
+                                                continue
+                                        else:
+                                            new_txn = models.TransactionHistory(
+                                                userID = user,
+                                                bought = False,
+                                                stock_symbol = order.stock_symbol,
+                                                quantity = order.quantity,
+                                                share_price = current_price,
+                                                trait = 'IS'
+                                            )
+                                            new_txn.save()
+                                            try:
+                                                user_current_stock = models.IntradayStocksOwned.objects.get(userID = user.id, stock_symbol = order.stock_symbol)
+                                                user_current_stock.quantity = user_current_stock.quantity - order.quantity
+                                                user_current_stock.save()
+                                            except:
+                                                new_stock = models.IntradayStocksOwned(
+                                                    userID = user,
+                                                    stock_symbol = order.stock_symbol,
+                                                    quantity = -1 * order.quantity
+                                                )
+                                                new_stock.save()
+                                            user.intraday_balance = float(user.intraday_balance) + (float(order.quantity) * float(current_price))
+                                            user.save()
+                                            order.target_price = 0
+                                            order.save()
+                                elif order.trait == 'CS' or order.trait == 'IS':
+                                    if current_price <= order.stop_loss:
+                                        share_amount = float(current_price) * float(order.quantity)
+                                        if order.trait == 'CS':
+                                            if share_amount <= user.balance:
+                                                try:
+                                                    user_current_stock = models.StocksOwned.objects.get(userID = user.id, stock_symbol = order.stock_symbol)
+                                                    user_current_stock.quantity = user_current_stock.quantity + order.quantity
+                                                    user_current_stock.save()         
+                                                except:
+                                                    new_stock = models.StocksOwned(
+                                                        userID = user,
+                                                        stock_symbol = order.stock_symbol,
+                                                        quantity = order.quantity
+                                                    )
+                                                    new_stock.save()
+                                                user.balance = float(user.balance) - (float(order.quantity) * float(current_price))
+                                                user.save()  
+                                                new_txn = models.TransactionHistory(
+                                                    userID = user,
+                                                    bought = True,
+                                                    stock_symbol = order.stock_symbol,
+                                                    quantity = order.quantity,
+                                                    share_price = current_price,
+                                                    trait = 'CB'
+                                                ) 
+                                                new_txn.save() 
+                                                order.target_price = 0
+                                                order.save()
+                                        else:
+                                            if share_amount <= user.intraday_balance:
+                                                try:
+                                                    user_current_stock = models.IntradayStocksOwned.objects.get(userID = user.id, stock_symbol = order.stock_symbol)
+                                                    user_current_stock.quantity = user_current_stock.quantity + order.quantity
+                                                    user_current_stock.save()
+                                                        
+                                                except:
+                                                    new_stock = models.StocksOwned(
+                                                        userID = user,
+                                                        stock_symbol = order.stock_symbol,
+                                                        quantity = order.quantity
+                                                    )
+                                                    new_stock.save()
+                                                user.intraday_balance = float(user.intraday_balance) - (float(order.quantity) * float(current_price))
+                                                user.save() 
+                                                new_txn = models.TransactionHistory(
+                                                    userID = user,
+                                                    bought = True,
+                                                    stock_symbol = order.stock_symbol,
+                                                    quantity = order.quantity,
+                                                    share_price = current_price,
+                                                    trait = 'IB'
+                                                ) 
+                                                new_txn.save() 
+                                                order.target_price = 0
+                                                order.save()
                         if order.limit_price == False and order.stop_loss == 0 and order.target_price == 0:
                             order.status_pending = False
                             order.save()

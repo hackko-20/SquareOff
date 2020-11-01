@@ -11,7 +11,7 @@ import os
 import requests
 from . import tasks
 import json
-from datetime import date,time
+from datetime import datetime,date,time
 
 
 # api key  
@@ -211,6 +211,15 @@ def place_order(request):
         return HttpResponseRedirect(reverse(home))   
     
     # if the user submits data to place an order
+
+    #check if submission was made before the markets closed
+    now = datetime.datetime.now()
+    endTime = now.replace(hour=1, minute=30, second=0, microsecond=0)
+    if(timezone.now > endTime):
+        message = "The order was not placed, the markets are closed now."
+        return render(request, 'VirtualStockMarketApp/Home.html',{"message": message })
+    
+
     trait = request.POST["TRAIT"]
     stock_symbol = request.POST["stock_symbol"]
     if request.POST["LimitCheck"] == 'limit':
@@ -227,7 +236,6 @@ def place_order(request):
         GTC = False
     stop_loss = float(request.POST["StopLoss"])
     target_price = float(request.POST["TargetPrice"])
-
     # creating object
     new_order = models.OrderHistory (
         userID = models.User.objects.get(id = request.session['user_id']), 
@@ -540,7 +548,7 @@ def place_order(request):
 
 def explore(request):
     # if user is not logged in
-    if not request.user.get('user_id'):
+    if not request.session.get('user_id'):
         return HttpResponseRedirect(reverse(login_view))
     
     return render(request, 'VirtualStockMarketApp/Home.html')
@@ -551,4 +559,20 @@ def home(request):
 
     user_favourites = models.Favourites.objects.filter(id = request.session.get('user_id'))
     return render(request,'VirtualStockMarketApp/Home.html', {"user_favourites": user_favourites}) 
+
+def ruleset(request):
+    return render(request, 'VirtualStockMarketApp/Ruleset.html', {})
+
+def addToFav(request):
+    # if user is not logged in
+    if not request.session.get('user_id'):
+        return HttpResponseRedirect(reverse(login_view))
+    user = models.User.objects.get(id = request.session["user_id"])
+    stock_symbol = request.POST["addToFav"]
+    fav_stock = models.Favourites(
+        userID = user,
+        stock_symbol = stock_symbol
+    )
+    fav_stock.save()
+    return render(request, 'VirtualStockMarketApp/Home.html', { "message": "The stock was added to your favourites." })
 

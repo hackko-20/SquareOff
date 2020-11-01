@@ -13,7 +13,13 @@ body {
     height: 100%;
     width: 100%;
 }
-
+ul{
+    padding: 5%;
+    padding-left: 10%;
+}
+li{
+    padding: 2%;
+}
 /* navigation bar */
 .topnav {
     overflow: hidden;
@@ -21,14 +27,14 @@ body {
     position: relative;
   }
   
-.topnav #myLinks {
+  .topnav #myLinks {
     display: none;
   }
-.topnav #myLinks2{
+  .topnav #myLinks2{
     display: none;
   }
   
-.topnav a {
+  .topnav a {
     color: white;
     padding: 14px 16px;
     text-decoration: none;
@@ -36,19 +42,19 @@ body {
     display: block;
   }
   
-.topnav a.icon {
+  .topnav a.icon {
     display: block;
     position: absolute;
     right: 0;
     top: 0;
   }
   
-.topnav a:hover {
+  .topnav a:hover {
     background-color: #ddd;
     color: black;
   }
   
-.active {
+  .active {
     background-color: #4169E1;
     color: white;
   }
@@ -70,6 +76,7 @@ body {
     height:100vh;
     width:100%;
     padding: 20px;
+    
     display: flex;
 }
 /*trends section */

@@ -105,8 +105,8 @@ fetch(url)
     .then(data => {
             console.log("in data");
             var x=data.latestPrice;
-            document.getElementById("stock_symbolCol").innerHTML = " " + x + " ";
+            document.getElementById("stock_symbolCol").innerHTML = x;
     })
     .catch(error => {
         alert("stock symbol not found");
-    });
+});

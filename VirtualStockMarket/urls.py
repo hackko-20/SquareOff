@@ -21,6 +21,6 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include("VirtualStockMarketApp.urls")),
-    path(r'^admin/statuscheck/', include('celerybeat_status.urls'))
+    path('admin/statuscheck/', include('celerybeat_status.urls'))
 ]
 urlpatterns += staticfiles_urlpatterns()

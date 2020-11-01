@@ -11,4 +11,6 @@ urlpatterns = [
     path('home', views.home),
     path('celery',views.test_celery),
     path('chart/getdata', views.chartData.as_view(), name='get-chart-data'),
+    path('ruleset', views.ruleset),
+    path('add_to_fav', views.addToFav)
 ]

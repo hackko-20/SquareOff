@@ -23,6 +23,8 @@ function search_api() {
                 element.innerHTML= data.companyName;
                 document.getElementById("searchOption").appendChild(element);
                 document.getElementById("watermark").style.display = "none";
+                document.getElementById("addToFav").value = key;
+                document.getElementById("FavButton").disabled = false;
         })
         .catch(error => {
             alert("symbol not found");
@@ -32,10 +34,11 @@ function search_api() {
                 prevLinks[i].remove();
             }
             document.getElementById("watermark").style.display = "block";
+            document.getElementById("addToFav").disabled = true;
         });  
 }
 
-function openForm(evt, formName) {
+function openForm(evt, formName, price) {
     var i, formElement, tablinks;
     formElement = document.getElementsByClassName("formElements");
     for (i = 0; i < formElement.length; i++) {
@@ -47,26 +50,38 @@ function openForm(evt, formName) {
     }
     document.getElementById(formName).style.display = "block";
     evt.currentTarget.className += " active";
+    var selectFields = document.querySelectorAll(".LimitCheck option")
+    for( i = 0; i < selectFields.length; i++)
+    {
+        selectFields[i].selected = selectFields[i].defaultSelected;
+    }
+
+    //the price input
+    var priceField = document.getElementsByClassName("price")
+    for( i = 0; i < priceField.length; i++)
+    {
+        priceField[i].value = price;
+        priceField[i].readOnly = true;
+    }
 }
 
 function switchCL(e, price) {
-    console.log("iinnnn");
     var value = e.target.value;
     var field = document.getElementsByClassName("price");
-    console.log("in");
     for (var i=0;i<field.length;i++)
     {
         if (value === "current")
         {
-            field[i].setAttribute("placeholder", price);
-            field[i].readonly = true;
+            field[i].value = price;
+            field[i].readOnly = true;
         }
         else
         {
-            field[i].setAttribute("placeholder", "");
             field[i].removeAttribute("readonly");
+            field[i].readOnly = false;
         }       
     }
+    
 }
 
 function myFunction() {
