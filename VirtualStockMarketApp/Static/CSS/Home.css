@@ -157,7 +157,7 @@ input[type=text] {
 }
 .footer-links a
 {
-  color:#737373
+  color:lightgray;
 }
 .footer-links a:active,.footer-links a:focus,.footer-links a:hover
 {

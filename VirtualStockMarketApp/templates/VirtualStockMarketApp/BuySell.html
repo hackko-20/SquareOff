@@ -77,8 +77,7 @@
                                                   {% else %}<span style="color: #da0101;float:right;font-family:'Courier New';"><strong></strong>{{ stock.ytdChange|floatformat:5 }}</strong></span><br>
                                                   {% endif %}
                     </div>
-                </div>
-                <br><br>   
+                </div>  
                 <div id="graphs">
                     <script type="text/javascript">
                         var symbol = "{{ stock.symbol }}";
@@ -91,7 +90,7 @@
                             <button class="dropdown-item" onclick="openGraph(event, 'Candlestick')">Candlestick</button>
                             <button class="dropdown-item" onclick="openGraph(event, 'Line')">Line</button>
                             <button class="dropdown-item" onclick="openGraph(event, 'Bar')">Bar</button>
-                        </div>
+                        </div><h4 style="display: inline;">Stock Chart</h4>
                     </div>
                     <div id="Candlestick" class="graph" style="display:block;"></div>
                     <div id="Line" class="graph"></div>

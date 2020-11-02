@@ -19,13 +19,7 @@
     <div class="topnav" style="background: #4169E1;">
       <a href="home" style="background: #4169E1;" class="active">Home</a>
       <div id="myLinks">
-        <a onclick="myFunction2()"style="color: white;">Portfolio</a>
-        <div id="myLinks2" >
-          <a href="portfolio">profile</a>
-          <a href="portfolio">transaction history</a>
-          <a href="portfolio">profit/loss statement</a>
-          <a href="portfolio">favourites</a>
-        </div>
+        <a href="portfolio">Portfolio</a>
         <a href="logout">Log Out</a>
       </div>
       <a href="javascript:void(0);" class="icon" onclick="myFunction()">
@@ -36,19 +30,20 @@
     <div class="header">
         <div class="heading"><h1>SQUARE OFF</h1></div>
     </div>
-    <!-- Main Body -->
-    <div class="mainContent">
-      <div class="trends">
-      </div>
-      <!-- stock search bar -->
-      {% if message %}
-        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    {% if message %}
+        <div class="alert alert-info alert-dismissible fade show" role="alert" style="margin-left: 20px; margin-right: 20px;">
             <strong>{{ message }}</strong>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
-      {% endif %}
+    {% endif %}
+    <!-- Main Body -->
+    <div class="mainContent">
+      <div class="trends">
+      </div>
+      <!-- stock search bar -->
+      
       <div class="searchBar">
         <input id="searchbar" type="text" style="border: 1px solid lightgray;" name="search" placeholder="Enter stock symbol...">
         <button class="searchButton btn" onclick="search_api()"><i stye="display:inline;"class="fa fa-search fa-2x" aria-hidden="true"></i></button><br><br>
@@ -56,7 +51,7 @@
             <input id="ss" name="ss" style="display: none;">
         </form>
         <br><br>
-          <center><h3 style="color: #a8a7a798;" id="watermark">The link to the stock you searched will be displayed</h3><br><br>
+          <center><h3 style="color: #a8a7a798;font-size: medium;" id="watermark">Click on the link generated for complete information about the stock</h3><br><br>
             <form method="POST" action="add_to_fav">
               {% csrf_token %}
               <input name="addToFav" id="addToFav" style="display:none;">

@@ -153,6 +153,8 @@ def portfolio(request):
     user_txn_history = models.TransactionHistory.objects.filter(userID = request.session.get('user_id'))
     user_stocks_owned = models.StocksOwned.objects.filter(userID = request.session.get('user_id'))
     user_monthly_analysis = models.MonthlyAnalysis.objects.filter(userID = user.id)
+    user_order_history = models.OrderHistory.objects.filter(userID = user.id)
+    user_intraday_stocks_owned = models.IntradayStocksOwned.objects.filter(userID = user.id)
 
     # calculation of net worth of the user
     net_worth = user.balance
@@ -188,7 +190,9 @@ def portfolio(request):
         "user": user,
         "user_stocks_owned": user_stocks_owned,
         "user_monthly_analysis": user_monthly_analysis,
-        "day_profit": day_profit
+        "day_profit": day_profit,
+        "user_order_history": user_order_history,
+        "user_intraday_stocks_owned": user_intraday_stocks_owned
     })
 
 def place_order(request):
@@ -569,6 +573,9 @@ def addToFav(request):
         return HttpResponseRedirect(reverse(login_view))
     user = models.User.objects.get(id = request.session["user_id"])
     stock_symbol = request.POST["addToFav"]
+    fav_stocks = models.Favourites.objects.filter(userID = user.id, stock_symbol = stock_symbol)
+    if fav_stocks is not None:
+        return render(request, 'VirtualStockMarketApp/Home.html', { "message": "The selected stock is already present in your Favourites." })
     fav_stock = models.Favourites(
         userID = user,
         stock_symbol = stock_symbol

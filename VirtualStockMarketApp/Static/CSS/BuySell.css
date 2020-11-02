@@ -112,6 +112,7 @@ body {
     display: flex;
     justify-content: flex-end;
     padding: .5em;
+    flex-direction: row;
 }
 
 .form-row > label {
@@ -188,6 +189,7 @@ input[type=number] {
 .card1, .card2 {
     width: 50%;
     padding: 20px;
+    background-color: whitesmoke;
 }
 
 .card1 > p, .card2 > p {
@@ -199,11 +201,6 @@ input[type=number] {
 }
 
 
-@media screen and (max-width: 800px) {
-    .cards .card {
-        width: 100%;
-    }
-}
 
 #graphs {
     width:100%;
@@ -224,4 +221,39 @@ input[type=number] {
     width: 40px;
     border-radius: 50%;
 
+}
+
+@media screen and (max-width: 800px) {
+    .cards .card {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    .cards {
+        flex-direction: column;
+    }
+    .card1, .card2 {
+        width: 100%;
+        padding: 0px;
+    }
+}
+
+@media screen and (max-width: 300px) {
+    .form-row {
+        flex-direction: column;
+        justify-content: space-evenly;
+        padding: 0px;
+    }
+    .form-row > input {
+        width: 100%;
+    }
+    .stockDetails {
+        padding: 0px;
+        margin: 3px;
+    }
+    .cards {
+        padding: 10px;
+        background-color: #ffffff;
+    }
 }

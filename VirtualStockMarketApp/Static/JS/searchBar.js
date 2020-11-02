@@ -34,7 +34,7 @@ function search_api() {
                 prevLinks[i].remove();
             }
             document.getElementById("watermark").style.display = "block";
-            document.getElementById("addToFav").disabled = true;
+            document.getElementById("FavButton").disabled = true;
         });  
 }
 
@@ -91,7 +91,8 @@ function myFunction() {
     } else {
       x.style.display = "block";
     }
-  }
+}
+
 function myFunction2() {
     var x = document.getElementById("myLinks2");
     if (x.style.display === "block") {

@@ -163,6 +163,7 @@ body {
     background-color:#4169E1;
     flex: 1;
     width: 100%;
+    height: auto;
     justify-content: space-around; 
     overflow-y: auto;
 }
@@ -201,6 +202,7 @@ body {
     width: 100%;
     justify-content: space-around; 
     flex: 1;
+    overflow-y: auto;
 }
 
 .profit > h3 {

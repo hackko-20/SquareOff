@@ -50,7 +50,7 @@
                         <button class="btn btn-link collapsed" type="button" data-toggle="collapse" onclick="openDiv('TH')">Transaction History</button>
                     </li>
                     <li class="nav-item"></li>
-                        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" onclick="openDiv('PL')">Profit/Loss Statement</button>
+                        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" onclick="openDiv('PL')">Stock Holdings</button>
                     </li>
                     <li class="nav-item">
                         <button class="btn btn-link collapsed" type="button" data-toggle="collapse" onclick="openDiv('FV')">Favourites</button>
@@ -129,21 +129,57 @@
                         <center><h3 style="color: lightgrey;margin-top:40px;">No transactions to show</h3>
                         <a href="home" style="color:white;">Search up Stocks!</a></center>
                       </div>
+                      {% endif %}<br><br>
+                      {% if user_order_history %}
+                      <h3>Order history</h3><br><br>
+                      <table class="table table-striped table-dark table-sm tableHistory">
+                        <thead>
+                          <tr>
+                            <th scope="col" class="columnHeads" style="padding:7px;">#</th>
+                            <th scope="col" class="columnHeads" style="padding:7px;">Stock Symbol</th>
+                            <th scope="col" class="columnHeads" style="padding:7px;">Type</th>
+                            <th scope="col" class="columnHeads" style="padding:7px;">Quantity</th>
+                            <th scope="col" class="columnHeads" style="padding:7px;">Share Price</th>
+                            <th scope="col" class="columnHeads" style="padding:7px;">Status</th>
+                            <th scope="col" class="columnHeads" style="padding:7px;">Limit Order</th>
+                            <th scope="col" class="columnHeads" style="padding:7px;">Stop Loss</th>
+                            <th scope="col" class="columnHeads" style="padding:7px;">Target Price</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for txn in user_order_history %}
+                          <tr>
+                            <th scope="row" id="rowNum"></th>
+                            <td>{{ txn.stock_symbol }}</td>
+                            {% if txn.trait == 'CB' %}
+                            <td style="color: #18f035;font-weight: 600;">Cash Buy</td>
+                            {% elif txn.trait == 'IB' %}
+                            <td style="color: #18f035;font-weight: 600;">Intraday Buy</td>
+                            {% elif txn.trait == 'CS' %}
+                            <td style="color: #cc9f0c;font-weight: 600;">Cash Sell</td>
+                            {% elif txn.trait == 'IS' %}
+                            <td style="color: #cc9f0c;font-weight: 600;">Intraday Sell</td>
+                            {% endif %}
+                            <td>{{ txn.quantity }}</td>
+                            <td>{{ txn.price }}</td>
+                            {% if txn.status_pending %}<td style="color: #18f035;font-weight: 600;">Executed</td>
+                            {% else %}<td style="color: #f01818;font-weight: 600;">Pending</td>
+                            {% endif %}
+                            {% if txn.limit_price %}<td>YES</td>
+                            {% else %}<td>NO</td>
+                            {% endif %}
+                            <td>{{ txn.stop_loss }}</td>
+                            <td>{{ txn.target_price }}</td>
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
                       {% endif %}
+                      
                 </div>
 
                 <!-- Profit section -->
                 <div class="subClass profit" id="PL">
-                  <div class="profitInfo">
-                      <h4>Profit/Loss Statement: </h4><br>
-                      <p>Overall Gain:&nbsp;&nbsp;{% if profit >= 0 %}<span style="color: #4bf561;"><strong>&#36;{{ profit }}</strong></span><br>
-                          {% else %}<span style="color: #eb5e4c;"><strong>&#36;{{ profit }}</strong></span><br>
-                          {% endif %}</p>
-                      <p>Today's Gain:&nbsp;&nbsp;{% if day_profit >= 0 %}<span style="color: #4bf561;"><strong>&#36;{{ day_profit }}</strong></span><br>
-                        {% else %}<span style="color: #eb5e4c;"><strong>&#36;{{ day_profit }}</strong></span><br>
-                        {% endif %}</p>
-                  </div>
-                  <br><br>
                   <h3>Current Stock Holdings: </h3>
                   {% if user_stocks_owned %}
                   <table class="table table-striped table-sm table-dark tableStocks">
@@ -169,6 +205,27 @@
                     <center><h3 style="color: lightgrey;margin-top:40px;">You currently do not have any holdings</h3>
                     <a href="home" style="color:white;">Search up Stocks!</a></center>
                   </div>
+                  {% endif %}<br><br>
+                  {% if user_intraday_stocks_owned %}
+                  <h3>Current Intraday Stock Holdings: </h3>
+                  <table class="table table-striped table-sm table-dark tableStocks">
+                    <thead>
+                      <tr>
+                        <th scope="col" class="columnHeads" style="padding:7px;">#</th>
+                        <th scope="col" class="columnHeads" style="padding:7px;">Stock Symbol</th>
+                        <th scope="col" class="columnHeads" style="padding:7px;">Quantity</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for row in user_intraday_stocks_owned %}
+                      <tr>
+                        <th scope="row"></th>
+                        <td>{{ row.stock_symbol }}</td>
+                        <td>{{ row.quantity }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
                   {% endif %}
                 </div>
 
@@ -182,6 +239,7 @@
                           <th scope="col" class="columnHeads" style="padding:7px;">#</th>
                           <th scope="col" class="columnHeads" style="padding:7px;">Stock Symbol</th>
                           <th scope="col" class="columnHeads" style="padding:7px;">Current Share Price</th>
+                          <th scope="col" class="columnHeads" style="padding:7px;"></th>
                         </tr>
                       </thead>
                       <tbody>
@@ -193,6 +251,9 @@
                               <th scope="row"></th>
                               <td>{{ favStocks.stock_symbol }}</td>
                               <td id="stock_symbolCol"></td>
+                              <td> <form method="GET" id="searchOption" action="place_order">
+                                <input id="ss" name="ss" value="{{ favStocks.stock_symbol }}" style="display: none;">
+                                <button type="submit" class="btn btn-sm btn-secondary">Track</button></form></td>
                           </tr>
                         {% endfor %}
                       </tbody>
